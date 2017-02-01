@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2c7e5841a453e4cb569bce93109c45, type: 3}
+  m_Name: StickerPack
+  m_EditorClassIdentifier: 
+  title: StickersApp Stickers
+  bundleId: no.agens.stickersapp.stickers
+  bundleVersion: 1.0
+  buildNumber: 1
+  Signing:
+    AutomaticSigning: 1
+    ProvisioningProfile: 
+    ProvisioningProfileSpecifier: 
+  Icons:
+    AppStore: {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
+    Settings:
+      BackgroundColor: {r: 1, g: 1, b: 1, a: 1}
+      FillPercentage: 100
+      FilterMode: 2
+      ScaleMode: 2
+    Override: 0
+    messagesiPadPro2: {fileID: 0}
+    messagesiPad2: {fileID: 0}
+    messagesiPhone2: {fileID: 0}
+    messagesiPhone3: {fileID: 0}
+    messagesSmall2: {fileID: 0}
+    messagesSmall3: {fileID: 0}
+    messages2: {fileID: 0}
+    messages3: {fileID: 0}
+    iPhoneSettings2: {fileID: 0}
+    iPhoneSettings3: {fileID: 0}
+    iPadSettings2: {fileID: 0}
+  Stickers:
+  - {fileID: 114069251595091142}
+  - {fileID: 114786403553275562}
+  - {fileID: 114706248781028484}
+--- !u!114 &114069251595091142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
+  m_Name: logo
+  m_EditorClassIdentifier: 
+  Name: logo
+  Fps: 15
+  Repetitions: 0
+  Index: 0
+  Sequence: 0
+  Frames:
+  - {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
+--- !u!114 &114706248781028484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
+  m_Name: 'Sticker #2'
+  m_EditorClassIdentifier: 
+  Name: 'Sticker #2'
+  Fps: 15
+  Repetitions: 0
+  Index: 2
+  Sequence: 0
+  Frames:
+  - {fileID: 0}
+--- !u!114 &114786403553275562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
+  m_Name: 'Sticker #1'
+  m_EditorClassIdentifier: 
+  Name: 'Sticker #1'
+  Fps: 15
+  Repetitions: 0
+  Index: 1
+  Sequence: 0
+  Frames:
+  - {fileID: 0}
