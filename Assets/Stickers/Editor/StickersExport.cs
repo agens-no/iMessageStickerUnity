@@ -45,7 +45,7 @@ namespace Agens.Stickers
             WriteToProject(pathToBuiltProject);
         }
 
-        private static void WriteToProject(string pathToBuiltProject)
+        public static void WriteToProject(string pathToBuiltProject)
         {
             var exists = Directory.Exists(pathToBuiltProject);
             if (!exists)
