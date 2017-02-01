@@ -16,16 +16,16 @@ MonoBehaviour:
   bundleVersion: 1.0
   buildNumber: 1
   Signing:
-    AutomaticSigning: 1
+    AutomaticSigning: 0
     ProvisioningProfile: 
     ProvisioningProfileSpecifier: 
   Icons:
     AppStore: {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
     Settings:
-      BackgroundColor: {r: 1, g: 1, b: 1, a: 1}
-      FillPercentage: 100
+      BackgroundColor: {r: 0.74922365, g: 0.740106, b: 0.8602941, a: 1}
+      FillPercentage: 86
       FilterMode: 2
-      ScaleMode: 2
+      ScaleMode: 1
     Override: 0
     messagesiPadPro2: {fileID: 0}
     messagesiPad2: {fileID: 0}
@@ -39,10 +39,9 @@ MonoBehaviour:
     iPhoneSettings3: {fileID: 0}
     iPadSettings2: {fileID: 0}
   Stickers:
-  - {fileID: 114069251595091142}
-  - {fileID: 114786403553275562}
-  - {fileID: 114706248781028484}
---- !u!114 &114069251595091142
+  - {fileID: 114534190145373984}
+  - {fileID: 114602808068927756}
+--- !u!114 &114534190145373984
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -60,7 +59,7 @@ MonoBehaviour:
   Sequence: 0
   Frames:
   - {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
---- !u!114 &114706248781028484
+--- !u!114 &114602808068927756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -69,30 +68,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
-  m_Name: 'Sticker #2'
+  m_Name: logo_full
   m_EditorClassIdentifier: 
-  Name: 'Sticker #2'
-  Fps: 15
-  Repetitions: 0
-  Index: 2
-  Sequence: 0
-  Frames:
-  - {fileID: 0}
---- !u!114 &114786403553275562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
-  m_Name: 'Sticker #1'
-  m_EditorClassIdentifier: 
-  Name: 'Sticker #1'
+  Name: logo_full
   Fps: 15
   Repetitions: 0
   Index: 1
   Sequence: 0
   Frames:
-  - {fileID: 0}
+  - {fileID: 2800000, guid: f85d13fc56d71d648b76483b230ecfd7, type: 3}
