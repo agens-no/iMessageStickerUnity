@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.iOS.Xcode.Stickers;
 using Application = UnityEngine.Application;
@@ -39,11 +40,37 @@ namespace Agens.Stickers
         [MenuItem(MenuItemPath + "Add to Xcode")]
         public static void WriteToProject()
         {
+            var pathToBuiltProject = EditorUtility.OpenFolderPanel("Select Xcode folder", "/../", "Build");
+
+            WriteToProject(pathToBuiltProject);
+        }
+
+        private static void WriteToProject(string pathToBuiltProject)
+        {
+            var exists = Directory.Exists(pathToBuiltProject);
+            if (!exists)
+            {
+                Debug.LogError("Could not find directory '" + pathToBuiltProject + "'");
+                return;
+            }
+
+            var files = Directory.GetFiles(pathToBuiltProject);
+            if (files.Length == 0)
+            {
+                Debug.LogError("Could not find any files in the directory '" + pathToBuiltProject + "'");
+                return;
+            }
+
+            var pbxProjFile = files.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj");
+            if (pbxProjFile == null)
+            {
+                Debug.LogError("Could not find the Xcode project in the directory '" + pathToBuiltProject + "'");
+                return;
+            }
+
             var pack = Resources.Load<StickerPack>(StickerAssetName);
             AddSticker(pack);
             var name = pack.Title;
-
-            string pathToBuiltProject = Application.dataPath.Replace("/Assets", string.Empty) + "/Build";
 
             PBXProject.AddStickerExtensionToXcodeProject(
                 ExportPath + name + "/",
@@ -53,11 +80,11 @@ namespace Agens.Stickers
                 PlayerSettings.iOS.appleDeveloperTeamID,
                 pack.BundleVersion,
                 pack.BuildNumber,
-                GetTargetDeviceFamily( PlayerSettings.iOS.targetDevice ),
+                GetTargetDeviceFamily(PlayerSettings.iOS.targetDevice),
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfile,
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfileSpecifier
             );
-            Debug.Log( "Added sticker extension named " + name );
+            Debug.Log("Added sticker extension named " + name);
         }
 
         private static void AddSticker(StickerPack pack)
