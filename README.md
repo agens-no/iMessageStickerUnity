@@ -19,7 +19,7 @@ This will create the StickerPack asset for you if it is not set up yet and then 
 
 ## Then you can specify the settings for the sticker pack.
 
-![alt tag](https://raw.githubusercontent.com/agens-no/iMessageStickerUnity/master/meta/StickerPackAsset.png)
+![alt tag](https://raw.githubusercontent.com/agens-no/iMessageStickerUnity/master/meta/StickerPackAsset.png)![alt tag](https://raw.githubusercontent.com/agens-no/iMessageStickerUnity/master/meta/CustomizingIcons.gif)
 
 ## As well as add sticker images.
 
