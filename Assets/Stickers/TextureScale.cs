@@ -36,7 +36,7 @@ namespace Agens.Stickers
 
             GL.Clear(true,true,backgroundColor);
 
-            fillPercentage = Mathf.Clamp01(fillPercentage);
+            fillPercentage = scaleMode == ScaleMode.ScaleToFit ? Mathf.Clamp01(fillPercentage) : 1;
 
             var scaledWidth = width * fillPercentage;
             var scaledHeight = height * fillPercentage;

@@ -90,11 +90,25 @@ namespace Agens.Stickers
         }
 
         #region AppStore
+
+        [Header("1024 x 768 px")]
+        [SerializeField]
+        private Texture2D appStore;
+
         /// <summary>
         /// 1024,768
         /// </summary>
-        [Header("1024 x 768 px")]
-        public Texture2D AppStore;
+        public Texture2D AppStore
+        {
+            get
+            {
+                if (Override)
+                {
+                    return appStore;
+                }
+                return GetDefaultTexture(1024, 768);
+            }
+        }
 
         public StickerIcon AppStoreIcon
         {
@@ -498,12 +512,12 @@ namespace Agens.Stickers
 
         public Texture2D GetDefaultTexture(int width, int height)
         {
-            if (AppStore == null)
+            if (appStore == null)
             {
                 return null;
             }
 
-            var scaled = TextureScale.ScaledResized(AppStore, width, height, Settings.BackgroundColor, Settings.FillPercentage / 100f, Settings.FilterMode, Settings.ScaleMode);
+            var scaled = TextureScale.ScaledResized(appStore, width, height, Settings.BackgroundColor, Settings.FillPercentage / 100f, Settings.FilterMode, Settings.ScaleMode);
             if (scaled != null)
             {
                 scaled.name = width + "x" + height;

@@ -81,7 +81,7 @@ namespace Agens.Stickers
 
             iconProperties = new[]
             {
-                icons.FindPropertyRelative("AppStore"),
+                icons.FindPropertyRelative("appStore"),
                 icons.FindPropertyRelative("messagesiPadPro2"),
                 icons.FindPropertyRelative("messagesiPad2"),
                 icons.FindPropertyRelative("messagesiPhone2"),
@@ -547,63 +547,88 @@ namespace Agens.Stickers
             EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 
             EditorGUILayout.BeginHorizontal();
-
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField("App Store Icon");
+            EditorGUILayout.LabelField("App Store Icon", boldLabelStyle);
             EditorGUILayout.LabelField("1024 x 768");
-            if (GUILayout.Button("Load from Folder", GUILayout.Width(150)))
-            {
-                var folder = EditorUtility.OpenFolderPanel("Select Sticker Icon Folder", string.Empty, string.Empty);
-                var files = Directory.GetFiles(folder, "*.png", SearchOption.TopDirectoryOnly).ToList();
-                files.Sort();
-
-                overrideIcon.boolValue = true;
-
-                var texturesFound = new List<Texture2D>();
-
-                foreach (var file in files)
-                {
-                    var projectPath = Application.dataPath;
-                    var filePath = file.Replace(projectPath, "Assets");
-                    Debug.Log("loaded texture at " + filePath);
-                    var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(filePath);
-                    texturesFound.Add(asset);
-                }
-
-                for (var i = 0; i < iconProperties.Length; i++)
-                {
-                    iconProperties[i].objectReferenceValue = texturesFound.Find(t => t.width == (int) iconTextureSizes[i].x && t.height == (int) iconTextureSizes[i].y);
-                }
-            }
+            EditorGUILayout.HelpBox(null, MessageType.None);
             EditorGUILayout.EndVertical();
 
             EditorGUI.BeginChangeCheck();
             iconProperties[0].objectReferenceValue = (Texture2D) EditorGUILayout.ObjectField(iconProperties[0].objectReferenceValue, typeof (Texture2D), false, GUILayout.Height(75) , GUILayout.Width(75));
             EditorGUILayout.EndHorizontal();
 
+
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical();
+            EditorGUI.BeginDisabledGroup(overrideIcon.boolValue);
             EditorGUILayout.PropertyField(backgroundColor);
-            EditorGUILayout.PropertyField(fillPercentage);
             EditorGUILayout.PropertyField(filterMode);
             EditorGUILayout.PropertyField(scaleMode);
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-                textureChanged = true;
-            }
-            var lastRect = GUILayoutUtility.GetLastRect();
-            lastRect.y += FieldPadding * 2;
-            lastRect.height = ButtonHeight;
-            lastRect.width = EditorGUIUtility.labelWidth;
+            EditorGUI.BeginDisabledGroup(scaleMode.enumValueIndex != (int)ScaleMode.ScaleToFit);
+            EditorGUILayout.PropertyField(fillPercentage);
+            EditorGUI.EndDisabledGroup();
+            EditorGUI.EndDisabledGroup();
 
-            EditorGUILayout.PropertyField(overrideIcon);
-
+            EditorGUILayout.EndHorizontal();
+            var rect = GUILayoutUtility.GetRect(100 + ImagePadding, 100 + ImagePadding, 75, 75, GUILayout.ExpandWidth(false));
+            rect.xMin += ImagePadding;
             CreateIconTextures();
+            EditorGUI.DrawTextureTransparent(rect, iconTextures[0]);
+            EditorGUILayout.EndVertical();
+
+            DrawOverride();
 
             for (int i = 1; i < iconProperties.Length; i++)
             {
                 DrawIcons(i);
             }
             EditorGUILayout.EndVertical();
+        }
+
+        private void DrawOverride()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(overrideIcon);
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                textureChanged = true;
+            }
+            EditorGUI.BeginDisabledGroup(!overrideIcon.boolValue);
+            if (GUILayout.Button("Load from Folder", GUILayout.Width(155)))
+            {
+                LoadIconsFromFolder();
+            }
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+        }
+
+        private void LoadIconsFromFolder()
+        {
+            var folder = EditorUtility.OpenFolderPanel("Select Sticker Icon Folder", string.Empty, string.Empty);
+            var files = Directory.GetFiles(folder, "*.png", SearchOption.TopDirectoryOnly).ToList();
+            files.Sort();
+
+            overrideIcon.boolValue = true;
+
+            var texturesFound = new List<Texture2D>();
+
+            foreach (var file in files)
+            {
+                var projectPath = Application.dataPath;
+                var filePath = file.Replace(projectPath, "Assets");
+                Debug.Log("loaded texture at " + filePath);
+                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(filePath);
+                texturesFound.Add(asset);
+            }
+
+            for (var i = 0; i < iconProperties.Length; i++)
+            {
+                iconProperties[i].objectReferenceValue = texturesFound.Find(t => t.width == (int) iconTextureSizes[i].x && t.height == (int) iconTextureSizes[i].y);
+            }
         }
 
         private void DrawIcons(int i)
