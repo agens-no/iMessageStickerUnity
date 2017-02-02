@@ -540,6 +540,11 @@ namespace Agens.Stickers
             }
         }
 
+        private void DrawHelpBoxForIcon(Texture2D texture, int width, int height)
+        {
+
+        }
+
         private void DrawIcons()
         {
             CreateIconTextures();
@@ -549,8 +554,7 @@ namespace Agens.Stickers
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("App Store Icon", boldLabelStyle);
-            EditorGUILayout.LabelField("1024 x 768");
-            EditorGUILayout.HelpBox(null, MessageType.None);
+            EditorGUILayout.LabelField("1024 x 1024");
             EditorGUILayout.EndVertical();
 
             EditorGUI.BeginChangeCheck();
@@ -571,10 +575,17 @@ namespace Agens.Stickers
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.EndHorizontal();
-            var rect = GUILayoutUtility.GetRect(100 + ImagePadding, 100 + ImagePadding, 75, 75, GUILayout.ExpandWidth(false));
+            var rect = GUILayoutUtility.GetRect(75 + ImagePadding, 75 + ImagePadding, 75, 75, GUILayout.ExpandWidth(false));
             rect.xMin += ImagePadding;
             CreateIconTextures();
-            EditorGUI.DrawTextureTransparent(rect, iconTextures[0]);
+            if (iconTextures[0] == null)
+            {
+                GUI.Box(rect, GUIContent.none);
+            }
+            else
+            {
+                EditorGUI.DrawTextureTransparent(rect, iconTextures[0]);
+            }
             EditorGUILayout.EndVertical();
 
             DrawOverride();

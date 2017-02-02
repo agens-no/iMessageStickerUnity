@@ -70,7 +70,7 @@ namespace Agens.Stickers
             {
                 return new []
                 {
-                    new Vector2(1024,768),
+                    new Vector2(1024,1024),
 
                     new Vector2(148,110),
                     new Vector2(134,100),
@@ -91,7 +91,7 @@ namespace Agens.Stickers
 
         #region AppStore
 
-        [Header("1024 x 768 px")]
+        [Header("1024 x 1024 px")]
         [SerializeField]
         private Texture2D appStore;
 
@@ -106,7 +106,7 @@ namespace Agens.Stickers
                 {
                     return appStore;
                 }
-                return GetDefaultTexture(1024, 768);
+                return GetDefaultTexture(1024, 1024);
             }
         }
 
@@ -117,7 +117,7 @@ namespace Agens.Stickers
                 var texture = AppStore;
                 if (texture != null)
                 {
-                    return new StickerIcon(texture, 1024, 768, StickerIcon.Idiom.IosMarketing, StickerIcon.Scale.Original, "ios");
+                    return new StickerIcon(texture, 1024, 1024, StickerIcon.Idiom.IosMarketing, StickerIcon.Scale.Original, "ios");
                 }
                 return null;
             }

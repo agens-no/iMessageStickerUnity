@@ -20,12 +20,12 @@ MonoBehaviour:
     ProvisioningProfile: 
     ProvisioningProfileSpecifier: 
   Icons:
-    AppStore: {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
+    appStore: {fileID: 0}
     Settings:
-      BackgroundColor: {r: 0.74922365, g: 0.740106, b: 0.8602941, a: 1}
-      FillPercentage: 86
+      BackgroundColor: {r: 0.7141897, g: 0.6991782, b: 0.89705884, a: 1}
+      FillPercentage: 100
       FilterMode: 2
-      ScaleMode: 1
+      ScaleMode: 2
     Override: 0
     messagesiPadPro2: {fileID: 0}
     messagesiPad2: {fileID: 0}
