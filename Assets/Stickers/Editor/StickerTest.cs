@@ -10,7 +10,7 @@ namespace Agens.Stickers
     {
 
         [Test]
-        public void ContainsName()
+        public void Title()
         {
             var pack = Resources.Load<StickerPack>("StickerPack");
             Assert.IsNotNull(pack, "Sticker Pack object is missing");
@@ -32,14 +32,16 @@ namespace Agens.Stickers
         private static void AssertSequence(Sticker sticker, int i)
         {
             Assert.IsNotNull(sticker.Frames[0], "Sticker #" + i + " is null");
-            var size = sticker.Frames[0].width;
+            var pixelSize = sticker.Frames[0].width;
             for (int index = 0; index < sticker.Frames.Count; index++)
             {
                 var stickerTexture = sticker.Frames[index];
                 Assert.IsNotNull(stickerTexture, "Sticker Asset #" + index + " in Sequence #" + i + " is null");
                 Assert.Contains(stickerTexture.width, StickerPackEditor.ValidSizes, "Sticker " + stickerTexture.name + " in Sequence #" + i + " is not a valid size (" + stickerTexture.width + ")");
-                Assert.AreEqual(size, stickerTexture.width, stickerTexture.height, "Sticker " + stickerTexture.name + " in Sequence #" + i + " is not the same size as the rest");
+                Assert.AreEqual(pixelSize, stickerTexture.width, stickerTexture.height, "Sticker " + stickerTexture.name + " in Sequence #" + i + " is not the same size as the rest");
             }
+
+            Assert.LessOrEqual(StickerPackEditor.CalculateFileSize(sticker), 500000, "Sticker " + sticker.Name + " is larger than the allowed 500KB");
         }
     }
 }

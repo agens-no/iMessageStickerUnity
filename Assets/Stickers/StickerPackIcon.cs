@@ -80,7 +80,7 @@ namespace Agens.Stickers
                     new Vector2(54,40),
                     new Vector2(81,60),
                     new Vector2(64,48),
-                    new Vector2(94,72),
+                    new Vector2(96,72),
 
                     new Vector2(58,58),
                     new Vector2(87,87),
@@ -378,7 +378,7 @@ namespace Agens.Stickers
         private  Texture2D messages3;
 
         /// <summary>
-        /// 94,72
+        /// 96,72
         /// </summary>
         public Texture2D Messages3
         {
@@ -388,7 +388,7 @@ namespace Agens.Stickers
                 {
                     return messages3;
                 }
-                return GetDefaultTexture(94, 72);
+                return GetDefaultTexture(96, 72);
             }
         }
 

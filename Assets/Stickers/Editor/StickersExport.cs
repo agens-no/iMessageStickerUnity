@@ -30,7 +30,7 @@ namespace Agens.Stickers
                 sticker.Signing.AutomaticSigning = PlayerSettings.iOS.appleEnableAutomaticSigning;
                 sticker.Signing.ProvisioningProfile = PlayerSettings.iOS.iOSManualProvisioningProfileID;
                 var assetPathAndName = AssetDatabase.GenerateUniqueAssetPath (StickerAssetPath);
-                Debug.Log("Creating StickerPack asset at " + assetPathAndName);
+                Log("Creating StickerPack asset at " + assetPathAndName);
                 AssetDatabase.CreateAsset(sticker, assetPathAndName);
             }
 
@@ -45,27 +45,49 @@ namespace Agens.Stickers
             WriteToProject(pathToBuiltProject);
         }
 
+        private static void LogError(string error)
+        {
+            Debug.LogError("Sticker Plugin Error: " + error);
+        }
+
+        private static void Log(string message)
+        {
+            Debug.Log("Sticker Plugin: " + message);
+        }
+
         public static void WriteToProject(string pathToBuiltProject)
         {
             var exists = Directory.Exists(pathToBuiltProject);
             if (!exists)
             {
-                Debug.LogError("Could not find directory '" + pathToBuiltProject + "'");
+                LogError("Could not find directory '" + pathToBuiltProject + "'");
                 return;
             }
+
+            var directories = Directory.GetDirectories(pathToBuiltProject);
 
             var files = Directory.GetFiles(pathToBuiltProject);
             if (files.Length == 0)
             {
-                Debug.LogError("Could not find any files in the directory '" + pathToBuiltProject + "'");
+                LogError("Could not find any files in the directory '" + pathToBuiltProject + "'");
                 return;
             }
 
-            var pbxProjFile = files.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj");
+            if (directories.Length == 0)
+            {
+                LogError("Could not find any directories in the directory '" + pathToBuiltProject + "'");
+                return;
+            }
+
+            var pbxProjFile = directories.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj" || Path.GetExtension(file) == ".xcodeproj");
             if (pbxProjFile == null)
             {
-                Debug.LogError("Could not find the Xcode project in the directory '" + pathToBuiltProject + "'");
-                return;
+                pbxProjFile = files.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj" || Path.GetExtension(file) == ".xcodeproj");
+                if (pbxProjFile == null)
+                {
+                    LogError("Could not find the Xcode project in the directory '" + pathToBuiltProject + "'");
+                    return;
+                }
             }
 
             var pack = Resources.Load<StickerPack>(StickerAssetName);
@@ -84,7 +106,7 @@ namespace Agens.Stickers
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfile,
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfileSpecifier
             );
-            Debug.Log("Added sticker extension named " + name);
+            Log("Added sticker extension named " + name);
         }
 
         private static void AddSticker(StickerPack pack)
@@ -104,7 +126,7 @@ namespace Agens.Stickers
             var pathToStickers = path + "/Stickers.xcassets/Sticker Pack.stickerpack";
             if (!Directory.Exists(pathToStickers))
             {
-                Debug.Log("Creating " + pathToStickers);
+                Log("Creating " + pathToStickers);
                 Directory.CreateDirectory(pathToStickers);
             }
 
@@ -140,7 +162,7 @@ namespace Agens.Stickers
             Directory.CreateDirectory(pathToSticker);
 
             var json = CreateStickerContent(sticker);
-            Debug.Log("writing " + pathToSticker + "/Contents.json");
+            Log("writing " + pathToSticker + "/Contents.json");
             json.WriteToFile(pathToSticker + "/Contents.json");
             var oldPath = pathToProject + "/" + AssetDatabase.GetAssetPath(sticker);
             var fileName = pathToSticker + "/" + sticker.name + ".png";
@@ -164,7 +186,7 @@ namespace Agens.Stickers
             Directory.CreateDirectory(pathToSticker);
 
             var json = CreateStickerSequenceContent(stickerSequence);
-            Debug.Log("writing " + pathToSticker + "/Contents.json");
+            Log("writing " + pathToSticker + "/Contents.json");
             json.WriteToFile(pathToSticker + "/Contents.json");
 
             foreach (var frame in stickerSequence.Frames)
@@ -181,7 +203,7 @@ namespace Agens.Stickers
             var pathToAppIcons = path + "/Stickers.xcassets/iMessage App Icon.stickersiconset";
             if (!Directory.Exists(pathToAppIcons))
             {
-                Debug.Log("Creating " + pathToAppIcons);
+                Log("Creating " + pathToAppIcons);
                 Directory.CreateDirectory(pathToAppIcons);
             }
 
@@ -191,7 +213,7 @@ namespace Agens.Stickers
             foreach (var icon in icons)
             {
                 var fileName = pathToAppIcons + "/" + icon.name + ".png";
-                Debug.Log("Copying " + icon.name + " to " + fileName);
+                Log("Copying " + icon.name + " to " + fileName);
                 File.WriteAllBytes(fileName, icon.EncodeToPNG());
             }
         }

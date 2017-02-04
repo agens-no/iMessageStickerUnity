@@ -6,6 +6,9 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEditorInternal;
 using UnityEngine;
+#if UNITY_5_5_OR_NEWER
+using UnityEngine.Profiling;
+#endif
 
 namespace Agens.Stickers
 {
@@ -20,7 +23,7 @@ namespace Agens.Stickers
         private const float ButtonHeight = 22;
         private const float ButtonPadding = ButtonHeight + 4;
         private const float FieldPadding = FieldHeight + 2;
-        private const float ImageSize = 102;
+        private const float ImageSize = 122;
         private const float ImagePadding = 4;
 
         private MethodInfo repaintMethod;
@@ -54,6 +57,14 @@ namespace Agens.Stickers
         private SerializedProperty stickers;
         private ReorderableList list;
 
+        private Vector2 previewScroll;
+        private static readonly GUIContent PixelSize = new GUIContent("Pixel Size");
+        private static readonly GUIContent SizeOnDisk = new GUIContent("Size on disk");
+        private static readonly GUIContent AppStoreIcon = new GUIContent("App Store Icon");
+        private static readonly GUIContent AppStoreIconSize = new GUIContent("1024 x 1024");
+        private static readonly GUIContent LoadFromFolder = new GUIContent("Load from Folder");
+
+        private readonly Dictionary<Sticker, long> diskSizes = new Dictionary<Sticker, long>();
         private int SelectedSection { get { return EditorPrefs.GetInt("StickerSettings.ShownSection", -1); } set{ EditorPrefs.SetInt("StickerSettings.ShownSection", value); }}
         private readonly AnimBool[] sectionAnimators = new AnimBool[2];
         private static bool textureChanged;
@@ -132,6 +143,7 @@ namespace Agens.Stickers
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("Add Image"), false, CreateSticker);
             menu.AddItem(new GUIContent("Add Sequence"), false, CreateStickerSequence);
+            menu.AddItem(new GUIContent("Import from Folder"), false, ImportFromFolder);
             menu.ShowAsContext();
         }
 
@@ -176,6 +188,7 @@ namespace Agens.Stickers
         private void UpdatedIndexes(ReorderableList orderList)
         {
             Debug.Log("Saving sticker list");
+            diskSizes.Clear();
             var assets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(target));
             var stickersToAdd = new List<Sticker>();
             var index = 0;
@@ -209,7 +222,7 @@ namespace Agens.Stickers
             }
         }
 
-        private void OnAddCallback(bool sequence)
+        private Sticker OnAddCallback(bool sequence)
         {
             Debug.Log("Adding asset to " + target, target);
             var stickerToAdd = CreateInstance<Sticker>();
@@ -220,6 +233,61 @@ namespace Agens.Stickers
             stickerToAdd.Frames = new List<Texture2D>(1);
             stickerToAdd.Frames.Add(null);
             AddObjectToAsset(list, stickerToAdd);
+            return stickerToAdd;
+        }
+
+        private void ImportFromFolder()
+        {
+            var folder = EditorUtility.OpenFolderPanel("Import Stickers", EditorPrefs.GetString("Stickers.ImportFolder"), string.Empty);
+            if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
+            {
+                EditorPrefs.SetString("Stickers.ImportFolder", folder);
+
+                var files = Directory.GetFiles(folder, "*.png", SearchOption.TopDirectoryOnly);
+                foreach (var file in files)
+                {
+                    var sticker = OnAddCallback(false);
+                    var texture = LoadAssetFromPath<Texture2D>(file);
+                    if (texture != null)
+                    {
+                        sticker.Frames[0] = texture;
+                        sticker.name = texture.name;
+                        sticker.Name = texture.name;
+                    }
+                }
+
+                var directories = Directory.GetDirectories(folder);
+                foreach (var directory in directories)
+                {
+                    if (string.IsNullOrEmpty(directory))
+                    {
+                        continue;
+                    }
+
+                    var sticker = OnAddCallback(true);
+                    sticker.Frames = new List<Texture2D>(1);
+
+                    var dirInfo = new DirectoryInfo(directory);
+
+                    sticker.name = dirInfo.Name;
+                    sticker.Name = dirInfo.Name;
+
+                    files = Directory.GetFiles(directory, "*.png", SearchOption.TopDirectoryOnly);
+                    for (var index = 0; index < files.Length; index++)
+                    {
+                        var file = files[index];
+                        var texture = LoadAssetFromPath<Texture2D>(file);
+                        if (texture != null)
+                        {
+                            if (index == 0)
+                            {
+                            }
+
+                            sticker.Frames.Add(texture);
+                        }
+                    }
+                }
+            }
         }
 
         private void AddObjectToAsset(ReorderableList orderList, Sticker stickerToAdd)
@@ -291,6 +359,8 @@ namespace Agens.Stickers
 
         public override void OnPreviewGUI(Rect r, GUIStyle background)
         {
+            if (r.width < 60 || r.height < 60) return;
+
             var firstSticker = stickers.GetArrayElementAtIndex(0);
             var firstStickerObject = new SerializedObject(firstSticker.objectReferenceValue);
 
@@ -314,10 +384,16 @@ namespace Agens.Stickers
 
             var stickersToDrawPerRow = StickerPerRow[sizeIndex];
 
-            var pixelWidth = r.width / stickersToDrawPerRow;
-            var x = r.xMin;
-            var y = r.yMin;
+            var viewRect = new Rect(r);
+            viewRect.width -= 18;
+            var pixelWidth = viewRect.width / stickersToDrawPerRow;
+            var x = viewRect.xMin;
+            var y = viewRect.yMin;
             var stickerCounter = 0;
+            viewRect.height = Mathf.CeilToInt(stickers.arraySize / 3f) * pixelWidth;
+            previewScroll = GUI.BeginScrollView(r, previewScroll, viewRect, false, true);
+
+            var sequence = false;
             for (int i = 0; i < stickers.arraySize; i++)
             {
                 var sticker = stickers.GetArrayElementAtIndex(i);
@@ -332,11 +408,16 @@ namespace Agens.Stickers
                 var texture = firstFrameTexture;
                 if (texture == null)
                 {
-                    return;
+                    continue;
                 }
                 if (frameIndex < frames.arraySize)
                 {
                     texture = frames.GetArrayElementAtIndex(frameIndex).objectReferenceValue as Texture2D ?? firstFrameTexture;
+                }
+
+                if (firstStickerObject.FindProperty("Sequence").boolValue)
+                {
+                    sequence = true;
                 }
                 EditorGUI.DrawTextureTransparent(firstFrameRect, texture);
                 x += pixelWidth;
@@ -350,6 +431,12 @@ namespace Agens.Stickers
                     stickerCounter = 0;
                 }
             }
+            GUI.EndScrollView();
+
+            if (sequence)
+            {
+                Repaint();
+            }
         }
 
         private void DrawStickerElement(Rect rect, int index, bool isActive, bool isFocused)
@@ -357,75 +444,106 @@ namespace Agens.Stickers
             rect.y += 2;
             rect.width -= ImageSize + ImagePadding;
             var stickerAsset = stickers.GetArrayElementAtIndex(index);
+
             var sticker = new SerializedObject(stickerAsset.objectReferenceValue);
-            sticker.Update();
 
             var frames = sticker.FindProperty("Frames");
             var stickerName = sticker.FindProperty("Name");
             var sequence = sticker.FindProperty("Sequence");
             var fps = sticker.FindProperty("Fps");
+            var reps = sticker.FindProperty("Repetitions");
 
-            var nameRect = new Rect(rect);
-            nameRect.y += 1;
-            nameRect.height = FieldHeight;
-
-            //EditorGUI.BeginDisabledGroup(true);
-            EditorGUI.PropertyField(nameRect, stickerName);
-            //EditorGUI.EndDisabledGroup();
-
-            //var rect = GUILayoutUtility.GetRect(new GUIContent(Sequence.displayName, Sequence.tooltip), GUIStyle.none, GUILayout.Height(20));
-
-            var sequenceRect = new Rect(rect);
-            sequenceRect.y += ButtonHeight + 2;
-            sequenceRect.height = ButtonHeight;
-            sequenceRect.width -= 150;
-            EditorGUI.PropertyField(sequenceRect, sequence);
-
-            EditorGUI.BeginDisabledGroup(!sequence.boolValue);
-            var buttonRect = new Rect(rect);
-            buttonRect.y += ButtonHeight;
-            buttonRect.xMin = EditorGUIUtility.labelWidth + 50;
-            if (GUI.Button(buttonRect, "Load from Folder"))
+            Profiler.BeginSample("Sticker Element #" + index, stickerAsset.objectReferenceValue);
             {
-                StickerEditor.AddStickerSequence(sequence, stickerName, fps, frames);
+
+                var nameRect = new Rect(rect);
+                nameRect.y += 1;
+                nameRect.height = FieldHeight;
+
+                EditorGUI.PropertyField(nameRect, stickerName);
+
+                var sequenceRect = new Rect(rect);
+                sequenceRect.y += ButtonHeight + 2;
+                sequenceRect.height = ButtonHeight;
+                sequenceRect.width -= 150;
+                EditorGUI.PropertyField(sequenceRect, sequence);
+
+                EditorGUI.BeginDisabledGroup(!sequence.boolValue);
+                var buttonRect = new Rect(rect);
+                buttonRect.y += ButtonHeight;
+                buttonRect.xMin = EditorGUIUtility.labelWidth + 50;
+                if (GUI.Button(buttonRect, LoadFromFolder))
+                {
+                    StickerEditor.AddStickerSequence(sequence, stickerName, fps, frames);
+                }
+
+                var fieldRect = new Rect(rect);
+                fieldRect.y += FieldPadding + ButtonPadding;
+                fieldRect.height = FieldHeight;
+                EditorGUI.PropertyField(fieldRect, fps);
+                fieldRect.y += FieldPadding;
+                EditorGUI.PropertyField(fieldRect, reps);
+                EditorGUI.EndDisabledGroup();
+
+                if (frames.arraySize == 0)
+                {
+                    frames.InsertArrayElementAtIndex(0);
+                }
+
+                if (!sequence.boolValue && frames.arraySize > 1)
+                {
+                    frames.arraySize = 1;
+                }
+
+                fieldRect.y += FieldPadding;
+
+                var firstFrameRect = new Rect(rect);
+                firstFrameRect.height = ImageSize;
+                firstFrameRect.x = firstFrameRect.xMax + 4;
+                firstFrameRect.y += 1f;
+                firstFrameRect.width = ImageSize;
+
+                var firstFrame = frames.GetArrayElementAtIndex(0);
+
+                var firstFrameTexture = firstFrame.objectReferenceValue as Texture2D;
+
+                var size = new Vector2(firstFrameTexture != null ? firstFrameTexture.width : 0, firstFrameTexture != null ? firstFrameTexture.height : 0);
+
+                Profiler.BeginSample("Size Help Box");
+                {
+                    DrawSizeHelpBox(fieldRect, size);
+                }
+                Profiler.EndSample();
+                fieldRect.y += FieldPadding;
+
+                Profiler.BeginSample("Disk Size Help Box");
+                {
+                    DrawDiskSizeHelpBox(fieldRect, stickerAsset);
+                }
+                Profiler.EndSample();
+                var updateIndexes = false;
+
+                Profiler.BeginSample("Draw texture");
+                {
+                    if (DrawTexture(sequence, firstFrameRect, frames, fps, firstFrameTexture, firstFrame, stickerName, sticker, ref updateIndexes)) return;
+                }
+                Profiler.EndSample();
+
+                if (sticker.ApplyModifiedProperties() && updateIndexes)
+                {
+                    UpdatedIndexes(list);
+                }
             }
+            Profiler.EndSample();
 
-            var fpsRect = new Rect(rect);
-            fpsRect.y += FieldPadding + ButtonPadding;
-            fpsRect.height = FieldHeight;
-            EditorGUI.PropertyField(fpsRect, fps);
-            fpsRect.y += FieldPadding;
-            EditorGUI.PropertyField(fpsRect, sticker.FindProperty("Repetitions"));
-            EditorGUI.EndDisabledGroup();
-
-
-            if (frames.arraySize == 0)
+            if (sequence.boolValue && frames.arraySize > 1)
             {
-                frames.InsertArrayElementAtIndex(0);
+                RepaintView();
             }
+        }
 
-            if (!sequence.boolValue && frames.arraySize > 1)
-            {
-                frames.arraySize = 1;
-            }
-
-            fpsRect.y += FieldPadding;
-
-            var firstFrameRect = new Rect(rect);
-            firstFrameRect.height = ImageSize;
-            firstFrameRect.x = firstFrameRect.xMax + 4;
-            firstFrameRect.y += 1f;
-            firstFrameRect.width = ImageSize;
-
-            var firstFrame = frames.GetArrayElementAtIndex(0);
-
-            var firstFrameTexture = firstFrame.objectReferenceValue as Texture2D;
-
-            var size = new Vector2(firstFrameTexture != null ? firstFrameTexture.width : 0, firstFrameTexture != null ? firstFrameTexture.height : 0);
-
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUI.Vector2Field(fpsRect, "Size", size);
-            EditorGUI.EndDisabledGroup();
+        private static bool DrawTexture(SerializedProperty sequence, Rect firstFrameRect, SerializedProperty frames, SerializedProperty fps, Texture2D firstFrameTexture, SerializedProperty firstFrame, SerializedProperty stickerName, SerializedObject sticker, ref bool updateIndexes)
+        {
             if (sequence.boolValue)
             {
                 GUI.Box(firstFrameRect, GUIContent.none);
@@ -434,14 +552,13 @@ namespace Agens.Stickers
                 var texture = firstFrameTexture;
                 if (texture == null)
                 {
-                    return;
+                    return true;
                 }
                 if (frameIndex < frames.arraySize)
                 {
                     texture = frames.GetArrayElementAtIndex(frameIndex).objectReferenceValue as Texture2D ?? firstFrameTexture;
                 }
                 EditorGUI.DrawTextureTransparent(firstFrameRect, texture);
-
             }
             else
             {
@@ -452,25 +569,90 @@ namespace Agens.Stickers
                     firstFrame.objectReferenceValue = texture;
                     stickerName.stringValue = texture.name;
                     sticker.targetObject.name = texture.name;
+                    updateIndexes = true;
                 }
             }
+            return false;
+        }
 
-            if (sticker.ApplyModifiedProperties())
+        private void DrawDiskSizeHelpBox(Rect fieldRect, SerializedProperty stickerAsset)
+        {
+            var id = GUIUtility.GetControlID(SizeOnDisk, FocusType.Passive);
+            var helpRect2 = EditorGUI.PrefixLabel(fieldRect, id, SizeOnDisk);
+            var sizeOnDisk = GetFileSize(stickerAsset.objectReferenceValue as Sticker);
+            if (sizeOnDisk <= 500000)
             {
-                UpdatedIndexes(list);
+                EditorGUI.HelpBox(helpRect2, GetFileSizeInKB(sizeOnDisk), MessageType.None);
+            }
+            else
+            {
+                EditorGUI.HelpBox(helpRect2, GetFileSizeInKB(sizeOnDisk) + " is too large", MessageType.Warning);
+            }
+        }
+
+        private static void DrawSizeHelpBox(Rect fieldRect, Vector2 size)
+        {
+            var id = GUIUtility.GetControlID(PixelSize, FocusType.Passive);
+            var helpRect = EditorGUI.PrefixLabel(fieldRect, id, PixelSize);
+            if (ValidSizes.Any(si => si == size.x))
+            {
+                EditorGUI.HelpBox(helpRect, size.x + "x" + size.y, MessageType.None);
+            }
+            else
+            {
+                EditorGUI.HelpBox(helpRect, size.x + "x" + size.y + " is not valid", MessageType.Warning);
+            }
+        }
+
+        private void RepaintView()
+        {
+            if (repaintMethod == null)
+            {
+                var type = typeof(Editor).Assembly.GetType("UnityEditor.GUIView");
+                var prop = type.GetProperty("current", BindingFlags.Static | BindingFlags.Public);
+                guiView = prop.GetValue(null, null);
+                repaintMethod = guiView.GetType().GetMethod("Repaint", BindingFlags.Public | BindingFlags.Instance);
+            }
+            repaintMethod.Invoke(guiView, null);
+        }
+
+        public static string GetFileSizeInKB(long size)
+        {
+            if (size < 1000)
+            {
+                return size + "B";
+            }
+            else
+            {
+                return (size / 1000) + " KB";
+            }
+        }
+
+        private long GetFileSize(Sticker sticker)
+        {
+            if (diskSizes.ContainsKey(sticker))
+            {
+                return diskSizes[sticker];
             }
 
-            if (sequence.boolValue && frames.arraySize > 1)
+            var size = CalculateFileSize(sticker);
+            diskSizes.Add(sticker, size);
+            return size;
+        }
+
+        public static long CalculateFileSize(Sticker sticker)
+        {
+            long size = 0;
+            for (int index = 0; index < sticker.Frames.Count; index++)
             {
-                if (repaintMethod == null)
-                {
-                    var type = typeof(Editor).Assembly.GetType("UnityEditor.GUIView");
-                    var prop = type.GetProperty("current", BindingFlags.Static | BindingFlags.Public);
-                    guiView = prop.GetValue(null, null);
-                    repaintMethod = guiView.GetType().GetMethod("Repaint", BindingFlags.Public | BindingFlags.Instance);
-                }
-                repaintMethod.Invoke(guiView, null);
+                var stickerTexture = sticker.Frames[index];
+                var postPath = AssetDatabase.GetAssetPath(stickerTexture);
+                var projectPath = Application.dataPath;
+                var filePath = projectPath.Replace("Assets", string.Empty) + postPath;
+                var info = new FileInfo(filePath);
+                size += info.Length;
             }
+            return size;
         }
 
         public override void OnInspectorGUI()
@@ -485,15 +667,6 @@ namespace Agens.Stickers
                 boldLabelStyle = GetStyle("boldLabel");
             }
 
-            /*EditorGUI.BeginChangeCheck();
-            TextureScale.left = EditorGUILayout.FloatField("left", TextureScale.left);
-            TextureScale.right = EditorGUILayout.FloatField("right", TextureScale.right);
-            TextureScale.bottom = EditorGUILayout.FloatField("bottom", TextureScale.bottom);
-            TextureScale.top = EditorGUILayout.FloatField("top", TextureScale.top);
-            if (EditorGUI.EndChangeCheck())
-            {
-                textureChanged = true;
-            }*/
             serializedObject.Update();
             EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
             EditorGUILayout.PropertyField(title);
@@ -540,11 +713,6 @@ namespace Agens.Stickers
             }
         }
 
-        private void DrawHelpBoxForIcon(Texture2D texture, int width, int height)
-        {
-
-        }
-
         private void DrawIcons()
         {
             CreateIconTextures();
@@ -553,8 +721,8 @@ namespace Agens.Stickers
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField("App Store Icon", boldLabelStyle);
-            EditorGUILayout.LabelField("1024 x 1024");
+            EditorGUILayout.LabelField(AppStoreIcon, boldLabelStyle);
+            EditorGUILayout.LabelField(AppStoreIconSize);
             EditorGUILayout.EndVertical();
 
             EditorGUI.BeginChangeCheck();
@@ -578,7 +746,7 @@ namespace Agens.Stickers
             var rect = GUILayoutUtility.GetRect(75 + ImagePadding, 75 + ImagePadding, 75, 75, GUILayout.ExpandWidth(false));
             rect.xMin += ImagePadding;
             CreateIconTextures();
-            if (iconTextures[0] == null)
+            if (iconTextures.Length == 0 || iconTextures[0] == null)
             {
                 GUI.Box(rect, GUIContent.none);
             }
@@ -608,13 +776,22 @@ namespace Agens.Stickers
                 textureChanged = true;
             }
             EditorGUI.BeginDisabledGroup(!overrideIcon.boolValue);
-            if (GUILayout.Button("Load from Folder", GUILayout.Width(155)))
+            if (GUILayout.Button(LoadFromFolder, GUILayout.Width(155)))
             {
                 LoadIconsFromFolder();
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
+        }
+
+        private T LoadAssetFromPath<T>(string path) where T : Object
+        {
+            var projectPath = Application.dataPath;
+            var filePath = path.Replace(projectPath, "Assets");
+            Debug.Log("loaded texture at " + filePath);
+            var asset = AssetDatabase.LoadAssetAtPath<T>(filePath);
+            return asset;
         }
 
         private void LoadIconsFromFolder()
@@ -629,11 +806,7 @@ namespace Agens.Stickers
 
             foreach (var file in files)
             {
-                var projectPath = Application.dataPath;
-                var filePath = file.Replace(projectPath, "Assets");
-                Debug.Log("loaded texture at " + filePath);
-                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(filePath);
-                texturesFound.Add(asset);
+                texturesFound.Add(LoadAssetFromPath<Texture2D>(file));
             }
 
             for (var i = 0; i < iconProperties.Length; i++)
