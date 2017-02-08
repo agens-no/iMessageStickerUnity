@@ -134,7 +134,7 @@ namespace Agens.Stickers
             var contents = CreateContent();
             contents.WriteToFile(pathToContent);
 
-            var plist = CreatePList(pack.Title);
+            var plist = CreatePList(pack.Title, PlayerSettings.bundleVersion, PlayerSettings.iOS.buildNumber);
             plist.WriteToFile(path + "/Info.plist");
 
             foreach (var sticker in pack.Stickers)
