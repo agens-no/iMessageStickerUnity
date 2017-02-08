@@ -743,7 +743,7 @@ namespace Agens.Stickers
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.EndHorizontal();
-            var rect = GUILayoutUtility.GetRect(75 + ImagePadding, 75 + ImagePadding, 75, 75, GUILayout.ExpandWidth(false));
+            var rect = GUILayoutUtility.GetRect(100 + ImagePadding, 100 + ImagePadding, 75, 75, GUILayout.ExpandWidth(false));
             rect.xMin += ImagePadding;
             CreateIconTextures();
             if (iconTextures.Length == 0 || iconTextures[0] == null)
