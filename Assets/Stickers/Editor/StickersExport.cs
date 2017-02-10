@@ -23,9 +23,7 @@ namespace Agens.Stickers
             {
                 sticker = ScriptableObject.CreateInstance<StickerPack>();
                 sticker.Title = PlayerSettings.productName + " Stickers";
-                sticker.BundleId = PlayerSettings.bundleIdentifier + ".stickers";
-                sticker.BundleVersion = PlayerSettings.bundleVersion;
-                sticker.BuildNumber = PlayerSettings.iOS.buildNumber;
+                sticker.BundleId = "stickers";
                 sticker.Signing = new SigningSettings();
                 sticker.Signing.AutomaticSigning = PlayerSettings.iOS.appleEnableAutomaticSigning;
                 sticker.Signing.ProvisioningProfile = PlayerSettings.iOS.iOSManualProvisioningProfileID;
@@ -100,8 +98,8 @@ namespace Agens.Stickers
                 name,
                 pack.BundleId,
                 PlayerSettings.iOS.appleDeveloperTeamID,
-                pack.BundleVersion,
-                pack.BuildNumber,
+                PlayerSettings.bundleIdentifier,
+                PlayerSettings.iOS.buildNumber,
                 GetTargetDeviceFamily(PlayerSettings.iOS.targetDevice),
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfile,
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfileSpecifier

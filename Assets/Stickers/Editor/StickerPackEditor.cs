@@ -29,13 +29,14 @@ namespace Agens.Stickers
         private MethodInfo repaintMethod;
         private object guiView;
         private GUIStyle boldLabelStyle;
+        private GUIStyle labelStyle;
         private GUIStyle elementStyle;
         private GUIStyle settingsStyle;
 
         private SerializedProperty title;
         private SerializedProperty bundleId;
-        private SerializedProperty bundleVersion;
-        private SerializedProperty buildNumber;
+        //private SerializedProperty bundleVersion;
+        //private SerializedProperty buildNumber;
 
         private SerializedProperty signing;
         private SerializedProperty automaticSigning;
@@ -73,11 +74,12 @@ namespace Agens.Stickers
         {
             title = serializedObject.FindProperty("title");
             bundleId = serializedObject.FindProperty("bundleId");
-            bundleVersion = serializedObject.FindProperty("bundleVersion");
-            buildNumber = serializedObject.FindProperty("buildNumber");
+            //bundleVersion = serializedObject.FindProperty("bundleVersion");
+            //buildNumber = serializedObject.FindProperty("buildNumber");
 
             signing = serializedObject.FindProperty("Signing");
             automaticSigning = signing.FindPropertyRelative("AutomaticSigning");
+            automaticSigningAnimated = new AnimBool(Repaint);
             provisioningProfile = signing.FindPropertyRelative("ProvisioningProfile");
             provisioningProfileSpecifier = signing.FindPropertyRelative("ProvisioningProfileSpecifier");
 
@@ -667,19 +669,38 @@ namespace Agens.Stickers
                 boldLabelStyle = GetStyle("boldLabel");
             }
 
+            if (labelStyle == null)
+            {
+                labelStyle = GetStyle("label");
+            }
+
             serializedObject.Update();
             EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
             EditorGUILayout.PropertyField(title);
-            EditorGUILayout.PropertyField(bundleId);
-            EditorGUILayout.PropertyField(bundleVersion);
-            EditorGUILayout.PropertyField(buildNumber);
+            //PlayerSettings.bundleIdentifier + ".
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Bundle Id");
+            var content = new GUIContent(PlayerSettings.bundleIdentifier + ".");
+            EditorGUILayout.LabelField(content.text, labelStyle, GUILayout.Width(labelStyle.CalcSize(content).x));
+            EditorGUILayout.PropertyField(bundleId, GUIContent.none);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.LabelField("Bundle Version", PlayerSettings.bundleVersion);
+            EditorGUILayout.LabelField("Build Number", PlayerSettings.iOS.buildNumber);
+
             EditorGUILayout.PropertyField(automaticSigning);
-            EditorGUI.BeginDisabledGroup(automaticSigning.boolValue);
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(provisioningProfile);
-            EditorGUILayout.PropertyField(provisioningProfileSpecifier);
-            EditorGUI.indentLevel--;
-            EditorGUI.EndDisabledGroup();
+            automaticSigningAnimated.target = !automaticSigning.boolValue;
+
+            if(EditorGUILayout.BeginFadeGroup(automaticSigningAnimated.faded))
+            {
+                EditorGUI.BeginDisabledGroup(automaticSigning.boolValue);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(provisioningProfile);
+                EditorGUILayout.PropertyField(provisioningProfileSpecifier);
+                EditorGUI.indentLevel--;
+                EditorGUI.EndDisabledGroup();
+                EditorGUILayout.EndFadeGroup();
+            }
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space();
@@ -697,6 +718,8 @@ namespace Agens.Stickers
             EndSettingsBox();
             serializedObject.ApplyModifiedProperties();
         }
+
+        private AnimBool automaticSigningAnimated;
 
         public override bool UseDefaultMargins()
         {
@@ -817,10 +840,11 @@ namespace Agens.Stickers
 
         private void DrawIcons(int i)
         {
-            var size = iconTextureSizes[i];
-            var label = iconTextureLabels[i];
-            var icon = iconProperties[i];
-            var texture = iconTextures[i];
+
+            var size = iconTextureSizes.Length > i ? iconTextureSizes[i] : Vector2.zero;
+            var label = iconTextureLabels.Length > i ? iconTextureLabels[i] : GUIContent.none;
+            var icon = iconProperties.Length > i ? iconProperties[i] : null;
+            var texture = iconTextures.Length > i ? iconTextures[i] : null;
             var rect = GUILayoutUtility.GetRect(size.x, Mathf.Max(size.y + 4, 84), GUILayout.ExpandWidth(true));
 
             GUI.Box(rect, string.Empty);

@@ -44,45 +44,6 @@ namespace Agens.Stickers
             set { bundleId = value; }
         }
 
-        [Tooltip("Bundle version")]
-        [SerializeField]
-        private string bundleVersion;
-
-        public string BundleVersion
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(bundleVersion))
-                {
-                    Debug.LogWarning("Bundle Version is missing from Sticker Pack", this);
-                    return "1.0.0";
-                }
-                return bundleVersion;
-            }
-
-            set { bundleVersion = value; }
-        }
-
-
-        [Tooltip("Build version")]
-        [SerializeField]
-        private string buildNumber;
-
-        public string BuildNumber
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(buildNumber))
-                {
-                    Debug.LogWarning("Build Version is missing from Sticker Pack", this);
-                    return "1";
-                }
-                return buildNumber;
-            }
-
-            set { buildNumber = value; }
-        }
-
         public SigningSettings Signing;
 
 
