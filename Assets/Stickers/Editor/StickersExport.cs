@@ -98,7 +98,7 @@ namespace Agens.Stickers
                 name,
                 pack.BundleId,
                 PlayerSettings.iOS.appleDeveloperTeamID,
-                PlayerSettings.bundleIdentifier,
+                PlayerSettings.bundleVersion,
                 PlayerSettings.iOS.buildNumber,
                 GetTargetDeviceFamily(PlayerSettings.iOS.targetDevice),
                 pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfile,
