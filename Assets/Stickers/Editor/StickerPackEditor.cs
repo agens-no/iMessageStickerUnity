@@ -281,10 +281,6 @@ namespace Agens.Stickers
                         var texture = LoadAssetFromPath<Texture2D>(file);
                         if (texture != null)
                         {
-                            if (index == 0)
-                            {
-                            }
-
                             sticker.Frames.Add(texture);
                         }
                     }
@@ -568,10 +564,12 @@ namespace Agens.Stickers
                 var texture = EditorGUI.ObjectField(firstFrameRect, firstFrame.objectReferenceValue as Texture2D, typeof(Texture2D), false);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    firstFrame.objectReferenceValue = texture;
-                    stickerName.stringValue = texture.name;
-                    sticker.targetObject.name = texture.name;
-                    updateIndexes = true;
+					firstFrame.objectReferenceValue = texture;
+					if (texture != null) {
+						stickerName.stringValue = texture.name;
+						sticker.targetObject.name = texture.name;
+						updateIndexes = true;
+					}
                 }
             }
             return false;
@@ -652,7 +650,12 @@ namespace Agens.Stickers
                 var projectPath = Application.dataPath;
                 var filePath = projectPath.Replace("Assets", string.Empty) + postPath;
                 var info = new FileInfo(filePath);
-                size += info.Length;
+				try{
+                	size += info.Length;
+				} catch(FileNotFoundException e) {
+					Debug.LogWarning ("Filepath: " + filePath + " is not valid. Please check sticker is not null or exists on disk.");
+					Debug.LogWarning ("Catching: " + e);
+				}
             }
             return size;
         }
