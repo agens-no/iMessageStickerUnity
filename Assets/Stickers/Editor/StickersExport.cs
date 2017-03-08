@@ -150,6 +150,8 @@ namespace Agens.Stickers
 
         private static void ExportSticker(string pathToStickers, Texture2D sticker, string pathToProject)
         {
+			if (sticker == null) return;
+
             var pathToSticker = pathToStickers + "/" + sticker.name + ".sticker";
 
             if (Directory.Exists(pathToSticker))
