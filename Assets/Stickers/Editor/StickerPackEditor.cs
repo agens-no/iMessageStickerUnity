@@ -680,7 +680,6 @@ namespace Agens.Stickers
             serializedObject.Update();
             EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
             EditorGUILayout.PropertyField(title);
-            //PlayerSettings.bundleIdentifier + ".
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Bundle Id");
             var content = new GUIContent(PlayerSettings.bundleIdentifier + ".");

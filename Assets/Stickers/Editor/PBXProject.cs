@@ -1044,8 +1044,6 @@ namespace UnityEditor.iOS.Xcode.Stickers
             proj.ReadFromString(File.ReadAllText(projPath));
             var targ = proj.TargetGuidByName(PBXProject.GetUnityTargetName());
 
-
-
             RecursivelyCopy(extensionSourcePath, pathToBuiltProject + extensionGroupName + "/");
             if (proj.HasFramework("Messages.framework"))
             {
@@ -1059,51 +1057,53 @@ namespace UnityEditor.iOS.Xcode.Stickers
             if (proj.ContainsExtensionTarget(stickerExtensionName))
             {
                 Debug.LogWarning("Sticker extension already added");
-                return;
             }
-            var newTarget = proj.CreateExtensionTarget(stickerExtensionName, ext, "com.apple.product-type.app-extension.messages-sticker-pack");
-            proj.SetStickerExtensionReleaseBuildFlags(
-                proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "Release")],
-                infoPlistPath,
-                extensionBundleId,
-                teamId,
-                targetDevice,
-                provisioningProfile,
-                provisioningProfileSpecifier
-            );
-            proj.SetStickerExtensionDebugBuildFlags(
-                proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "Debug")],
-                infoPlistPath,
-                extensionBundleId,
-                teamId,
-                targetDevice,
-                provisioningProfile,
-                provisioningProfileSpecifier
-            );
+            else
+            {
+                var newTarget = proj.CreateExtensionTarget(stickerExtensionName, ext, "com.apple.product-type.app-extension.messages-sticker-pack");
+                proj.SetStickerExtensionReleaseBuildFlags(
+                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "Release")],
+                    infoPlistPath,
+                    extensionBundleId,
+                    teamId,
+                    targetDevice,
+                    provisioningProfile,
+                    provisioningProfileSpecifier
+                );
+                proj.SetStickerExtensionDebugBuildFlags(
+                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "Debug")],
+                    infoPlistPath,
+                    extensionBundleId,
+                    teamId,
+                    targetDevice,
+                    provisioningProfile,
+                    provisioningProfileSpecifier
+                );
 
-            var resourcesBuildPhase = PBXResourcesBuildPhaseData.Create();
-            proj.resources.AddEntry(resourcesBuildPhase);
-            newTarget.phases.AddGUID(resourcesBuildPhase.guid);
+                var resourcesBuildPhase = PBXResourcesBuildPhaseData.Create();
+                proj.resources.AddEntry(resourcesBuildPhase);
+                newTarget.phases.AddGUID(resourcesBuildPhase.guid);
 
-            proj.AddFileToBuild(newTarget.guid, proj.AddFileCustom(extensionSourcePath + "Stickers.xcassets", extensionGroupName + "/Stickers.xcassets", PBXSourceTree.Group, false));
-            proj.AddFileCustom(extensionSourcePath + "Info.plist", extensionGroupName + "/Info.plist", PBXSourceTree.Group, false);
+                proj.AddFileToBuild(newTarget.guid, proj.AddFileCustom(extensionSourcePath + "Stickers.xcassets", extensionGroupName + "/Stickers.xcassets", PBXSourceTree.Group, false));
+                proj.AddFileCustom(extensionSourcePath + "Info.plist", extensionGroupName + "/Info.plist", PBXSourceTree.Group, false);
 
-            var copyFilesBuildPhase = PBXCopyFilesBuildPhaseData.Create("Embed App Extensions", "13");
-            proj.copyFiles.AddEntry(copyFilesBuildPhase);
-            proj.nativeTargets[targ].phases.AddGUID(copyFilesBuildPhase.guid);
+                var copyFilesBuildPhase = PBXCopyFilesBuildPhaseData.Create("Embed App Extensions", "13");
+                proj.copyFiles.AddEntry(copyFilesBuildPhase);
+                proj.nativeTargets[targ].phases.AddGUID(copyFilesBuildPhase.guid);
 
-            var containerProxy = PBXContainerItemProxyData.Create(proj.project.project.guid, "1", newTarget.guid, stickerExtensionName);
-            proj.containerItems.AddEntry(containerProxy);
+                var containerProxy = PBXContainerItemProxyData.Create(proj.project.project.guid, "1", newTarget.guid, stickerExtensionName);
+                proj.containerItems.AddEntry(containerProxy);
 
-            var targetDependency = PBXTargetDependencyData.Create(newTarget.guid, containerProxy.guid);
-            proj.targetDependencies.AddEntry(targetDependency);
-            proj.nativeTargets[targ].dependencies.AddGUID(targetDependency.guid);
+                var targetDependency = PBXTargetDependencyData.Create(newTarget.guid, containerProxy.guid);
+                proj.targetDependencies.AddEntry(targetDependency);
+                proj.nativeTargets[targ].dependencies.AddGUID(targetDependency.guid);
 
-            var buildAppCopy = PBXBuildFileData.CreateFromFile(proj.FindFileGuidByProjectPath("Products/" + stickerExtensionName + ext), false, "");
-            proj.BuildFilesAdd(targ, buildAppCopy);
-            copyFilesBuildPhase.files.AddGUID(buildAppCopy.guid);
+                var buildAppCopy = PBXBuildFileData.CreateFromFile(proj.FindFileGuidByProjectPath("Products/" + stickerExtensionName + ext), false, "");
+                proj.BuildFilesAdd(targ, buildAppCopy);
+                copyFilesBuildPhase.files.AddGUID(buildAppCopy.guid);
 
-            File.WriteAllText(projPath, proj.WriteToString());
+                File.WriteAllText(projPath, proj.WriteToString());
+            }
 
             // need to set the version numbers to match the main app
             PlistDocument plist = new PlistDocument();

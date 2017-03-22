@@ -96,7 +96,7 @@ namespace Agens.Stickers
                 ExportPath + name + "/",
                 pathToBuiltProject + "/",
                 name,
-                pack.BundleId,
+                PlayerSettings.bundleIdentifier + "." + pack.BundleId,
                 PlayerSettings.iOS.appleDeveloperTeamID,
                 PlayerSettings.bundleVersion,
                 PlayerSettings.iOS.buildNumber,

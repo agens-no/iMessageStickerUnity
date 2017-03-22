@@ -12,9 +12,7 @@ MonoBehaviour:
   m_Name: StickerPack
   m_EditorClassIdentifier: 
   title: StickersApp Stickers
-  bundleId: no.agens.stickersapp.stickers
-  bundleVersion: 1.0
-  buildNumber: 1
+  bundleId: stickers
   Signing:
     AutomaticSigning: 0
     ProvisioningProfile: 
