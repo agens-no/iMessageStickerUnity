@@ -682,7 +682,11 @@ namespace Agens.Stickers
             EditorGUILayout.PropertyField(title);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Bundle Id");
+#if UNITY_5_6_OR_NEWER
+            var content = new GUIContent(PlayerSettings.applicationIdentifier + ".");
+#else
             var content = new GUIContent(PlayerSettings.bundleIdentifier + ".");
+#endif
             EditorGUILayout.LabelField(content.text, labelStyle, GUILayout.Width(labelStyle.CalcSize(content).x));
             EditorGUILayout.PropertyField(bundleId, GUIContent.none);
             EditorGUILayout.EndHorizontal();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace UnityEditor.iOS.Xcode
+namespace UnityEditor.iOS.Xcode.Stickers
 {
 	internal class DeviceTypeRequirement
     {

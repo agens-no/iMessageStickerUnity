@@ -14,7 +14,11 @@ namespace Agens.Stickers
         {
             var pack = Resources.Load<StickerPack>("StickerPack");
             Assert.IsNotNull(pack, "Sticker Pack object is missing");
+#if UNITY_5_6_OR_NEWER
+            Assert.IsNotNull(pack.Title, "Sticker Pack does not have a title");
+#else
             Assert.IsNotNullOrEmpty(pack.Title, "Sticker Pack does not have a title");
+#endif
         }
 
         [Test]

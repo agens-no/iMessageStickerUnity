@@ -92,11 +92,17 @@ namespace Agens.Stickers
             AddSticker(pack);
             var name = pack.Title;
 
+#if UNITY_5_6_OR_NEWER
+            var extensionBundleId = PlayerSettings.applicationIdentifier + "." + pack.BundleId;
+#else
+            var extensionBundleId = PlayerSettings.bundleIdentifier + "." + pack.BundleId;
+#endif
+
             PBXProject.AddStickerExtensionToXcodeProject(
                 ExportPath + name + "/",
                 pathToBuiltProject + "/",
                 name,
-                PlayerSettings.bundleIdentifier + "." + pack.BundleId,
+                extensionBundleId,
                 PlayerSettings.iOS.appleDeveloperTeamID,
                 PlayerSettings.bundleVersion,
                 PlayerSettings.iOS.buildNumber,
