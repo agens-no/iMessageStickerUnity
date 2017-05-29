@@ -1079,6 +1079,26 @@ namespace UnityEditor.iOS.Xcode.Stickers
                     provisioningProfile,
                     provisioningProfileSpecifier
                 );
+#if UNITY_5_5_OR_NEWER
+                proj.SetStickerExtensionDebugBuildFlags(
+                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "ReleaseForProfiling")],
+                    infoPlistPath,
+                    extensionBundleId,
+                    teamId,
+                    targetDevice,
+                    provisioningProfile,
+                    provisioningProfileSpecifier
+                );
+                proj.SetStickerExtensionDebugBuildFlags(
+                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "ReleaseForRunning")],
+                    infoPlistPath,
+                    extensionBundleId,
+                    teamId,
+                    targetDevice,
+                    provisioningProfile,
+                    provisioningProfileSpecifier
+                );
+#endif
 
                 var resourcesBuildPhase = PBXResourcesBuildPhaseData.Create();
                 proj.resources.AddEntry(resourcesBuildPhase);
@@ -1124,11 +1144,24 @@ namespace UnityEditor.iOS.Xcode.Stickers
 
             var debugBuildConfig = XCBuildConfigurationData.Create("Debug");
             buildConfigs.AddEntry(debugBuildConfig);
+            
+#if UNITY_5_5_OR_NEWER
+            var releaseForRunning = XCBuildConfigurationData.Create("ReleaseForRunning");
+            buildConfigs.AddEntry(releaseForRunning);
+            
+            var releaseForProfiling = XCBuildConfigurationData.Create("ReleaseForProfiling");
+            buildConfigs.AddEntry(releaseForProfiling);
+#endif
 
             var buildConfigList = XCConfigurationListData.Create();
             configs.AddEntry(buildConfigList);
             buildConfigList.buildConfigs.AddGUID(releaseBuildConfig.guid);
             buildConfigList.buildConfigs.AddGUID(debugBuildConfig.guid);
+            
+#if UNITY_5_5_OR_NEWER
+            buildConfigList.buildConfigs.AddGUID(releaseForRunning.guid);
+            buildConfigList.buildConfigs.AddGUID(releaseForProfiling.guid);
+#endif
 
             // create build file reference
             string fullName = name + ext;
