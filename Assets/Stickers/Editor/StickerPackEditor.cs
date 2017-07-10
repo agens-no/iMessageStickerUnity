@@ -360,6 +360,11 @@ namespace Agens.Stickers
             if (r.width < 60 || r.height < 60) return;
 
             var firstSticker = stickers.GetArrayElementAtIndex(0);
+            if (firstSticker == null)
+            {
+                Debug.LogWarning("Sticker at #0 is missing");
+                return;
+            }
             var firstStickerObject = new SerializedObject(firstSticker.objectReferenceValue);
 
             var frames = firstStickerObject.FindProperty("Frames");
@@ -442,6 +447,11 @@ namespace Agens.Stickers
             rect.y += 2;
             rect.width -= ImageSize + ImagePadding;
             var stickerAsset = stickers.GetArrayElementAtIndex(index);
+            if (stickerAsset == null)
+            {
+                Debug.LogWarning("Sticker asset at #" + index + " is missing");
+                return;
+            }
 
             var sticker = new SerializedObject(stickerAsset.objectReferenceValue);
 
