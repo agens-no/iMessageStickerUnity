@@ -106,22 +106,35 @@ namespace Agens.Stickers
 
         public override void OnPreviewSettings()
         {
-            using (new EditorGUI.DisabledScope(!Sequence.boolValue))
+#if UNITY_5_4_OR_NEWER
+			using (new EditorGUI.DisabledScope(!Sequence.boolValue))
+#else
+            EditorGUI.BeginDisabledGroup(!Sequence.boolValue);
+#endif
             {
                 playing = CycleButton(!playing ? 0 : 1, s_PlayIcons, "preButton") != 0;
             }
-
+#if !UNITY_5_4_OR_NEWER
+            EditorGUI.EndDisabledGroup();
+#endif
             if (textureEditors == null)
             {
                 CreateTextureEditor();
             }
 
             if (currentTextureEditor != null)
-            {
-                using (new EditorGUI.DisabledScope(playing))
+			{
+#if UNITY_5_4_OR_NEWER
+				using (new EditorGUI.DisabledScope(playing))
+#else
+			    EditorGUI.BeginDisabledGroup(playing);
+#endif
                 {
                     currentTextureEditor.OnPreviewSettings();
                 }
+#if !UNITY_5_4_OR_NEWER
+			    EditorGUI.EndDisabledGroup();
+#endif
             }
         }
 
@@ -218,17 +231,24 @@ namespace Agens.Stickers
             var sequenceRect = new Rect(rect);
             sequenceRect.width -= 150;
             EditorGUI.PropertyField(sequenceRect, Sequence);
-
-            rect.xMin = sequenceRect.xMax;
-            EditorGUI.BeginDisabledGroup(!Sequence.boolValue);
-            if (GUI.Button(rect, "Load from Folder"))
+#if UNITY_5_4_OR_NEWER
+            using (new EditorGUI.DisabledScope(playing))
+#else
+			EditorGUI.BeginDisabledGroup(playing);
+#endif
             {
-                AddStickerSequence(Sequence, Name, Fps, Frames);
-            }
+                rect.xMin = sequenceRect.xMax;
+                if (GUI.Button(rect, "Load from Folder"))
+                {
+                    AddStickerSequence(Sequence, Name, Fps, Frames);
+                }
 
-            EditorGUILayout.PropertyField(Fps);
-            EditorGUILayout.PropertyField(Repetitions);
-            EditorGUI.EndDisabledGroup();
+                EditorGUILayout.PropertyField(Fps);
+                EditorGUILayout.PropertyField(Repetitions);
+            }
+#if !UNITY_5_4_OR_NEWER
+			EditorGUI.EndDisabledGroup();
+#endif
 
             if (Frames.arraySize == 0)
             {

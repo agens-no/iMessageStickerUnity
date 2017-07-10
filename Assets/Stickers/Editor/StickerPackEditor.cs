@@ -62,7 +62,7 @@ namespace Agens.Stickers
         private static readonly GUIContent PixelSize = new GUIContent("Pixel Size");
         private static readonly GUIContent SizeOnDisk = new GUIContent("Size on disk");
         private static readonly GUIContent AppStoreIcon = new GUIContent("App Store Icon");
-        private static readonly GUIContent AppStoreIconSize = new GUIContent("1024 x 1024");
+        private static readonly GUIContent AppStoreIconSize = new GUIContent("1024 x 768");
         private static readonly GUIContent LoadFromFolder = new GUIContent("Load from Folder");
 
         private readonly Dictionary<Sticker, long> diskSizes = new Dictionary<Sticker, long>();
@@ -470,6 +470,7 @@ namespace Agens.Stickers
                 var buttonRect = new Rect(rect);
                 buttonRect.y += ButtonHeight;
                 buttonRect.xMin = EditorGUIUtility.labelWidth + 50;
+                buttonRect.height = ButtonHeight;
                 if (GUI.Button(buttonRect, LoadFromFolder))
                 {
                     StickerEditor.AddStickerSequence(sequence, stickerName, fps, frames);
@@ -600,7 +601,7 @@ namespace Agens.Stickers
             }
             else
             {
-                EditorGUI.HelpBox(helpRect, size.x + "x" + size.y + " is not valid", MessageType.Warning);
+                EditorGUI.HelpBox(helpRect, size.x + "x" + size.y + " is not valid. Use 300, 408 or 618", MessageType.Warning);
             }
         }
 
@@ -818,7 +819,6 @@ namespace Agens.Stickers
         {
             var projectPath = Application.dataPath;
             var filePath = path.Replace(projectPath, "Assets");
-            Debug.Log("loaded texture at " + filePath);
             var asset = AssetDatabase.LoadAssetAtPath<T>(filePath);
             return asset;
         }
