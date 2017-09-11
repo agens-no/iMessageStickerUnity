@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -64,12 +65,6 @@ namespace Agens.Stickers
 
             var directories = Directory.GetDirectories(pathToBuiltProject);
 
-            var files = Directory.GetFiles(pathToBuiltProject);
-            if (files.Length == 0)
-            {
-                LogError("Could not find any files in the directory '" + pathToBuiltProject + "'");
-                return;
-            }
 
             if (directories.Length == 0)
             {
@@ -80,6 +75,13 @@ namespace Agens.Stickers
             var pbxProjFile = directories.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj" || Path.GetExtension(file) == ".xcodeproj");
             if (pbxProjFile == null)
             {
+                var files = Directory.GetFiles(pathToBuiltProject);
+                if (files.Length == 0)
+                {
+                    LogError("Could not find any files in the directory '" + pathToBuiltProject + "'");
+                    return;
+                }
+                
                 pbxProjFile = files.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj" || Path.GetExtension(file) == ".xcodeproj");
                 if (pbxProjFile == null)
                 {
@@ -260,7 +262,15 @@ namespace Agens.Stickers
             {
                 dict.SetString("platform", icon.platform);
             }
-
+        }
+        
+        public static JsonDocument CreateStickerPackContent(StickerSize size)
+        {
+            var content = CreateContent();
+            var properties = content.root.CreateDict("properties");
+            properties.SetString("grid-size", Enum.GetName(typeof(StickerSize), size).ToLowerInvariant());
+            
+            return content;
         }
 
         public static JsonDocument CreateContent()

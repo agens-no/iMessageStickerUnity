@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -6,6 +7,7 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEditorInternal;
 using UnityEngine;
+using Object = UnityEngine.Object;
 #if UNITY_5_5_OR_NEWER
 using UnityEngine.Profiling;
 #endif
@@ -49,6 +51,8 @@ namespace Agens.Stickers
         private SerializedProperty filterMode;
         private SerializedProperty scaleMode;
         private SerializedProperty overrideIcon;
+        
+        private SerializedProperty size;
 
         private SerializedProperty[] iconProperties;
         private Texture2D[] iconTextures;
@@ -76,6 +80,7 @@ namespace Agens.Stickers
             bundleId = serializedObject.FindProperty("bundleId");
             //bundleVersion = serializedObject.FindProperty("bundleVersion");
             //buildNumber = serializedObject.FindProperty("buildNumber");
+            size = serializedObject.FindProperty("size");
 
             signing = serializedObject.FindProperty("Signing");
             automaticSigning = signing.FindPropertyRelative("AutomaticSigning");
@@ -516,11 +521,11 @@ namespace Agens.Stickers
 
                 var firstFrameTexture = firstFrame.objectReferenceValue as Texture2D;
 
-                var size = new Vector2(firstFrameTexture != null ? firstFrameTexture.width : 0, firstFrameTexture != null ? firstFrameTexture.height : 0);
+                var textureSize = new Vector2(firstFrameTexture != null ? firstFrameTexture.width : 0, firstFrameTexture != null ? firstFrameTexture.height : 0);
 
                 Profiler.BeginSample("Size Help Box");
                 {
-                    DrawSizeHelpBox(fieldRect, size);
+                    DrawSizeHelpBox(size, fieldRect, textureSize);
                 }
                 Profiler.EndSample();
                 fieldRect.y += FieldPadding;
@@ -601,18 +606,27 @@ namespace Agens.Stickers
             }
         }
 
-        private static void DrawSizeHelpBox(Rect fieldRect, Vector2 size)
+        private static void DrawSizeHelpBox(SerializedProperty size, Rect fieldRect, Vector2 stickerSize)
         {
             var id = GUIUtility.GetControlID(PixelSize, FocusType.Passive);
             var helpRect = EditorGUI.PrefixLabel(fieldRect, id, PixelSize);
-            if (ValidSizes.Any(si => si == size.x))
+            
+            var validSizeIndex = size.enumValueIndex;
+            var validSize = ValidSizes[validSizeIndex];
+            
+            if (IsValidSize(validSize, stickerSize))
             {
-                EditorGUI.HelpBox(helpRect, size.x + "x" + size.y, MessageType.None);
+                EditorGUI.HelpBox(helpRect, stickerSize.x + "x" + stickerSize.y, MessageType.None);
             }
             else
             {
-                EditorGUI.HelpBox(helpRect, size.x + "x" + size.y + " is not valid. Use 300, 408 or 618", MessageType.Warning);
+                EditorGUI.HelpBox(helpRect, stickerSize.x + "x" + stickerSize.y + " is not valid. Use " + validSize + "x" + validSize + "px", MessageType.Warning);
             }
+        }
+
+        private static bool IsValidSize(int validSize, Vector2 stickerSize)
+        {
+            return (int)stickerSize.x == validSize && (int)stickerSize.y == validSize;
         }
 
         private void RepaintView()
@@ -730,6 +744,7 @@ namespace Agens.Stickers
 
             if (BeginSettingsBox(1, new GUIContent("Stickers")))
             {
+                EditorGUILayout.PropertyField(size);
                 list.DoLayoutList();
             }
             EndSettingsBox();

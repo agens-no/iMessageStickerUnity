@@ -6,7 +6,6 @@ namespace Agens.Stickers
     [CreateAssetMenu(fileName = "StickerPack", menuName = "Sticker Pack")]
     public class StickerPack : ScriptableObject
     {
-
         [Tooltip("The Display Name of the Sticker Pack")]
         [SerializeField]
         private string title;
@@ -48,6 +47,10 @@ namespace Agens.Stickers
 
 
         public StickerPackIcon Icons;
+        [SerializeField]
+        private StickerSize size = StickerSize.Medium;
+
+        public StickerSize Size { get { return size; } set { size = value; }}
         public List<Sticker> Stickers;
     }
 }
