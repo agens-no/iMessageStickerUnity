@@ -36,6 +36,7 @@ MonoBehaviour:
     iPhoneSettings2: {fileID: 0}
     iPhoneSettings3: {fileID: 0}
     iPadSettings2: {fileID: 0}
+  size: 2
   Stickers:
   - {fileID: 114534190145373984}
   - {fileID: 114602808068927756}

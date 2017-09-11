@@ -137,7 +137,7 @@ namespace Agens.Stickers
             }
 
             var pathToContent = path + "/Stickers.xcassets/Contents.json";
-            var contents = CreateContent();
+            var contents = CreateStickerPackContent(pack.Size);
             contents.WriteToFile(pathToContent);
 
             var plist = CreatePList(pack.Title, PlayerSettings.bundleVersion, PlayerSettings.iOS.buildNumber);
@@ -291,6 +291,7 @@ namespace Agens.Stickers
             properties.SetString("filename", file.name + ".png");
             return content;
         }
+        
         public static JsonDocument CreateStickerSequenceContent(Sticker stickerSequence)
         {
             var content = CreateContent();
