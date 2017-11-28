@@ -10,13 +10,14 @@ namespace Agens.Stickers
 {
     public static class StickersExport
     {
-        private const string MenuItemPath = "Window/Stickers/";
+        private const string MenuItemPath = "Window/Sticker Pack";
 
         private const string StickerAssetName = "StickerPack";
         private const string StickerAssetPath = "Assets/Stickers/Resources/"+StickerAssetName+".asset";
+        private const string ExportName = "Unity-iPhone-Stickers";
         private static readonly string ExportPath = Application.dataPath + "/../Temp/Stickers/";
 
-        [MenuItem(MenuItemPath + "Configurate    ")]
+        [MenuItem(MenuItemPath)]
         public static void Configurate()
         {
             var sticker = Resources.Load<StickerPack>(StickerAssetName);
@@ -34,14 +35,6 @@ namespace Agens.Stickers
             }
 
             Selection.activeObject = sticker;
-        }
-
-        [MenuItem(MenuItemPath + "Add to Xcode")]
-        public static void WriteToProject()
-        {
-            var pathToBuiltProject = EditorUtility.OpenFolderPanel("Select Xcode folder", "/../", "Build");
-
-            WriteToProject(pathToBuiltProject);
         }
 
         private static void LogError(string error)
@@ -92,7 +85,6 @@ namespace Agens.Stickers
 
             var pack = Resources.Load<StickerPack>(StickerAssetName);
             AddSticker(pack);
-            var name = pack.Title;
 
 #if UNITY_5_6_OR_NEWER
             var extensionBundleId = PlayerSettings.applicationIdentifier + "." + pack.BundleId;
@@ -101,25 +93,24 @@ namespace Agens.Stickers
 #endif
 
             PBXProject.AddStickerExtensionToXcodeProject(
-                ExportPath + name + "/",
+                ExportPath + ExportName + "/",
                 pathToBuiltProject + "/",
-                name,
+                ExportName,
                 extensionBundleId,
                 PlayerSettings.iOS.appleDeveloperTeamID,
                 PlayerSettings.bundleVersion,
                 PlayerSettings.iOS.buildNumber,
                 GetTargetDeviceFamily(PlayerSettings.iOS.targetDevice),
-                pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfile,
-                pack.Signing.AutomaticSigning ? null : pack.Signing.ProvisioningProfileSpecifier
+                pack.Signing.AutomaticSigning,
+                pack.Signing.ProvisioningProfile,
+                pack.Signing.ProvisioningProfileSpecifier
             );
-            Log("Added sticker extension named " + name);
+            Log("Added sticker extension named " + pack.Title);
         }
 
         private static void AddSticker(StickerPack pack)
         {
-            var name = pack.Title;
-
-            var path = ExportPath + name;
+            var path = ExportPath + ExportName;
 
             ExportIcons(pack, path);
 

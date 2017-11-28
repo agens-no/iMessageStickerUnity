@@ -1036,7 +1036,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             return m_Data.WriteToString();
         }
 
-        public static void AddStickerExtensionToXcodeProject(string extensionSourcePath, string pathToBuiltProject, string extensionGroupName, string extensionBundleId, string teamId, string bundleVersion, string buildNumber, string targetDevice, string provisioningProfile = null, string provisioningProfileSpecifier = null)
+        public static void AddStickerExtensionToXcodeProject(string extensionSourcePath, string pathToBuiltProject, string extensionGroupName, string extensionBundleId, string teamId, string bundleVersion, string buildNumber, string targetDevice, bool auomaticSigning, string provisioningProfile = null, string provisioningProfileSpecifier = null)
         {
 
             string projPath = PBXProject.GetPBXProjectPath(pathToBuiltProject);
@@ -1067,6 +1067,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                     extensionBundleId,
                     teamId,
                     targetDevice,
+                    auomaticSigning,
                     provisioningProfile,
                     provisioningProfileSpecifier
                 );
@@ -1076,25 +1077,28 @@ namespace UnityEditor.iOS.Xcode.Stickers
                     extensionBundleId,
                     teamId,
                     targetDevice,
+                    auomaticSigning,
                     provisioningProfile,
                     provisioningProfileSpecifier
                 );
 #if UNITY_5_5_OR_NEWER
-                proj.SetStickerExtensionDebugBuildFlags(
+                proj.SetStickerExtensionReleaseBuildFlags(
                     proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "ReleaseForProfiling")],
                     infoPlistPath,
                     extensionBundleId,
                     teamId,
                     targetDevice,
+                    auomaticSigning,
                     provisioningProfile,
                     provisioningProfileSpecifier
                 );
-                proj.SetStickerExtensionDebugBuildFlags(
+                proj.SetStickerExtensionReleaseBuildFlags(
                     proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "ReleaseForRunning")],
                     infoPlistPath,
                     extensionBundleId,
                     teamId,
                     targetDevice,
+                    auomaticSigning,
                     provisioningProfile,
                     provisioningProfileSpecifier
                 );
@@ -1121,6 +1125,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                 var buildAppCopy = PBXBuildFileData.CreateFromFile(proj.FindFileGuidByProjectPath("Products/" + stickerExtensionName + ext), false, "");
                 proj.BuildFilesAdd(targ, buildAppCopy);
                 copyFilesBuildPhase.files.AddGUID(buildAppCopy.guid);
+
 
                 File.WriteAllText(projPath, proj.WriteToString());
             }
@@ -1185,7 +1190,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             return false;
         }
 
-        private void SetStickerExtensionReleaseBuildFlags(XCBuildConfigurationData config, string infoPlistPath, string bundleId, string teamId, string targetDevice, string provisioningProfile = null, string provisioningProfileSpecifier = null)
+        private void SetStickerExtensionBuildFlags(XCBuildConfigurationData config, string infoPlistPath, string bundleId, string teamId, string targetDevice, bool automaticSigning, string provisioningProfile = "", string provisioningProfileSpecifier = "")
         {
             config.AddProperty("ALWAYS_SEARCH_USER_PATHS", "NO");
             config.AddProperty("ASSETCATALOG_COMPILER_APPICON_NAME", "iMessage App Icon");
@@ -1207,58 +1212,50 @@ namespace UnityEditor.iOS.Xcode.Stickers
             config.AddProperty("CLANG_WARN_UNREACHABLE_CODE", "YES");
             config.AddProperty("CLANG_WARN__DUPLICATE_METHOD_MATCH", "YES");
             config.AddProperty("COPY_PHASE_STRIP", "NO");
-            config.AddProperty("DEBUG_INFORMATION_FORMAT", "dwarf-with-dsym");
-            config.AddProperty("DEVELOPMENT_TEAM", teamId);
-            config.AddProperty("ENABLE_NS_ASSERTIONS", "NO");
-            config.AddProperty("ENABLE_STRICT_OBJC_MSGSEND", "YES");
-            config.AddProperty("GCC_C_LANGUAGE_STANDARD", "gnu99");
-            config.AddProperty("GCC_NO_COMMON_BLOCKS", "YES");
+            
             config.AddProperty("GCC_WARN_64_TO_32_BIT_CONVERSION", "YES");
             config.AddProperty("GCC_WARN_ABOUT_RETURN_TYPE", "YES_ERROR");
             config.AddProperty("GCC_WARN_UNDECLARED_SELECTOR", "YES");
             config.AddProperty("GCC_WARN_UNINITIALIZED_AUTOS", "YES_AGGRESSIVE");
             config.AddProperty("GCC_WARN_UNUSED_FUNCTION", "YES");
-            config.AddProperty("INFOPLIST_FILE", infoPlistPath); // e.g. relative to source root "Stickers/Info.plist"
+            
             config.AddProperty("IPHONEOS_DEPLOYMENT_TARGET", "10.0"); // stickers introduced in 10.0
-            config.AddProperty("MTL_ENABLE_DEBUG_INFO", "NO");
-            config.AddProperty("PRODUCT_BUNDLE_IDENTIFIER", bundleId); // usualbundleidwithsuffix.stickers
             config.AddProperty("PRODUCT_NAME", "$(TARGET_NAME)");
-            if (!string.IsNullOrEmpty(provisioningProfile))
+            config.AddProperty("SKIP_INSTALL", "YES");
+            config.AddProperty("CODE_SIGN_IDENTITY[sdk=iphoneos*]", "iPhone Distribution");
+            config.AddProperty("INFOPLIST_FILE", infoPlistPath); // e.g. relative to source root "Stickers/Info.plist"
+            config.AddProperty("PRODUCT_BUNDLE_IDENTIFIER", bundleId);
+            config.AddProperty("TARGETED_DEVICE_FAMILY", targetDevice); // e.g. 1,2 universal
+            config.AddProperty("DEVELOPMENT_TEAM", teamId);
+            config.AddProperty("CODE_SIGN_STYLE", automaticSigning ? "Automatic" : "Manual");
+            if (!automaticSigning && !string.IsNullOrEmpty(provisioningProfile))
             {
                 config.AddProperty("PROVISIONING_PROFILE", provisioningProfile);
             }
-            if (!string.IsNullOrEmpty(provisioningProfileSpecifier))
+            if (!automaticSigning && !string.IsNullOrEmpty(provisioningProfileSpecifier))
             {
                 config.AddProperty("PROVISIONING_PROFILE_SPECIFIER", provisioningProfileSpecifier);
             }
-            config.AddProperty("SKIP_INSTALL", "YES");
-            config.AddProperty("TARGETED_DEVICE_FAMILY", targetDevice); // e.g. 1,2 universal
+        }
+
+        private void SetStickerExtensionReleaseBuildFlags(XCBuildConfigurationData config, string infoPlistPath, string bundleId, string teamId, string targetDevice, bool automaticSigning, string provisioningProfile = "", string provisioningProfileSpecifier = "")
+        {
+            SetStickerExtensionBuildFlags(config, infoPlistPath, bundleId, teamId, targetDevice, automaticSigning, provisioningProfile, provisioningProfileSpecifier);
+            config.AddProperty("DEBUG_INFORMATION_FORMAT", "dwarf-with-dsym");
+            
+            config.AddProperty("ENABLE_NS_ASSERTIONS", "NO");
+            config.AddProperty("ENABLE_STRICT_OBJC_MSGSEND", "YES");
+            config.AddProperty("GCC_C_LANGUAGE_STANDARD", "gnu99");
+            config.AddProperty("GCC_NO_COMMON_BLOCKS", "YES");
+            
+            config.AddProperty("MTL_ENABLE_DEBUG_INFO", "NO");
+            
             config.AddProperty("VALIDATE_PRODUCT", "YES");
         }
 
-        private void SetStickerExtensionDebugBuildFlags(XCBuildConfigurationData config, string infoPlistPath, string bundleId, string teamId, string targetDevice, string provisioningProfile = null, string provisioningProfileSpecifier = null)
+        private void SetStickerExtensionDebugBuildFlags(XCBuildConfigurationData config, string infoPlistPath, string bundleId, string teamId, string targetDevice, bool automaticSigning, string provisioningProfile = "", string provisioningProfileSpecifier = "")
         {
-            config.AddProperty("ALWAYS_SEARCH_USER_PATHS", "NO");
-            config.AddProperty("ASSETCATALOG_COMPILER_APPICON_NAME", "iMessage App Icon");
-            config.AddProperty("CLANG_ANALYZER_NONNULL", "YES");
-            config.AddProperty("CLANG_CXX_LANGUAGE_STANDARD", "gnu++0x");
-            config.AddProperty("CLANG_CXX_LIBRARY", "libc++");
-            config.AddProperty("CLANG_ENABLE_MODULES", "YES");
-            config.AddProperty("CLANG_ENABLE_OBJC_ARC", "YES");
-            config.AddProperty("CLANG_WARN_BOOL_CONVERSION", "YES");
-            config.AddProperty("CLANG_WARN_CONSTANT_CONVERSION", "YES");
-            config.AddProperty("CLANG_WARN_DIRECT_OBJC_ISA_USAGE", "YES_ERROR");
-            config.AddProperty("CLANG_WARN_DOCUMENTATION_COMMENTS", "YES");
-            config.AddProperty("CLANG_WARN_EMPTY_BODY", "YES");
-            config.AddProperty("CLANG_WARN_ENUM_CONVERSION", "YES");
-            config.AddProperty("CLANG_WARN_INFINITE_RECURSION", "YES");
-            config.AddProperty("CLANG_WARN_INT_CONVERSION", "YES");
-            config.AddProperty("CLANG_WARN_OBJC_ROOT_CLASS", "YES_ERROR");
-            config.AddProperty("CLANG_WARN_SUSPICIOUS_MOVES", "YES");
-            config.AddProperty("CLANG_WARN_UNREACHABLE_CODE", "YES");
-            config.AddProperty("CLANG_WARN__DUPLICATE_METHOD_MATCH", "YES");
-            config.AddProperty("COPY_PHASE_STRIP", "NO");
-            config.AddProperty("DEVELOPMENT_TEAM", teamId);
+            SetStickerExtensionBuildFlags(config, infoPlistPath, bundleId, teamId, targetDevice, automaticSigning, provisioningProfile, provisioningProfileSpecifier);
             config.AddProperty("ENABLE_STRICT_OBJC_MSGSEND", "YES");
             config.AddProperty("ENABLE_TESTABILITY", "YES");
             config.AddProperty("GCC_C_LANGUAGE_STANDARD", "gnu99");
@@ -1267,27 +1264,11 @@ namespace UnityEditor.iOS.Xcode.Stickers
             config.AddProperty("GCC_OPTIMIZATION_LEVEL", "0");
             config.AddProperty("GCC_PREPROCESSOR_DEFINITIONS", "DEBUG=1");
             config.AddProperty("GCC_PREPROCESSOR_DEFINITIONS", "$(inherited)");
-            config.AddProperty("GCC_WARN_64_TO_32_BIT_CONVERSION", "YES");
-            config.AddProperty("GCC_WARN_ABOUT_RETURN_TYPE", "YES_ERROR");
-            config.AddProperty("GCC_WARN_UNDECLARED_SELECTOR", "YES");
-            config.AddProperty("GCC_WARN_UNINITIALIZED_AUTOS", "YES_AGGRESSIVE");
-            config.AddProperty("GCC_WARN_UNUSED_FUNCTION", "YES");
-            config.AddProperty("INFOPLIST_FILE", infoPlistPath);
-            config.AddProperty("IPHONEOS_DEPLOYMENT_TARGET", "10.0");
+            
             config.AddProperty("MTL_ENABLE_DEBUG_INFO", "YES");
             config.AddProperty("ONLY_ACTIVE_ARCH", "YES");
-            config.AddProperty("PRODUCT_BUNDLE_IDENTIFIER", bundleId);
-            config.AddProperty("PRODUCT_NAME", "$(TARGET_NAME)");
-            if (!string.IsNullOrEmpty(provisioningProfile))
-            {
-                config.AddProperty("PROVISIONING_PROFILE", provisioningProfile);
-            }
-            if (!string.IsNullOrEmpty(provisioningProfileSpecifier))
-            {
-                config.AddProperty("PROVISIONING_PROFILE_SPECIFIER", provisioningProfileSpecifier);
-            }
+            
             config.AddProperty("SKIP_INSTALL", "YES");
-            config.AddProperty("TARGETED_DEVICE_FAMILY", targetDevice);
         }
 
         // JASON: this is a modified copy of the AddFileImpl method
