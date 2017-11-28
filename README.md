@@ -1,6 +1,6 @@
 # iMessageStickerUnity
 
-An iMessage Sticker plugin for Unity3d that adds a Sticker extension target to an xCode project created by Unity3d.
+An iMessage Sticker plugin for Unity3d that adds a Sticker extension target to an Xcode project created by Unity3d.
 
 ## Unity Version
 Tested with several Unity Versions
