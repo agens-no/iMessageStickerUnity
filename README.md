@@ -20,6 +20,8 @@ Tested with several Xcode Versions
 * Xcode 8.3.2
 * Xcode 9.1
 
+## Stickers During Runtime
+This plugin does not support adding stickers during runtime.
 
 ## Feedback
 
