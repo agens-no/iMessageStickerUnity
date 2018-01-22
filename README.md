@@ -4,15 +4,16 @@ An iMessage Sticker plugin for Unity3d that adds a Sticker extension target to a
 
 ## Unity Version
 Tested with several Unity Versions
-* Unity 5.3.8f2
-* Unity 5.4.4f1
-* Unity 5.4.5p3
-* Unity 5.4.5p5
-* Unity 5.5.2f1
-* Unity 5.6.0f3
-* Unity 5.6.1f1
-* Unity 2017.1.1f1
+* Unity 2017.3.0f3
 * Unity 2017.2.0p2
+* Unity 2017.1.1f1
+* Unity 5.6.1f1
+* Unity 5.6.0f3
+* Unity 5.5.2f1
+* Unity 5.4.5p5
+* Unity 5.4.5p3
+* Unity 5.4.4f1
+* Unity 5.3.8f2
 
 ## Xcode Version
 Tested with several Xcode Versions

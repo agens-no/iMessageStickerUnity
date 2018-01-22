@@ -1222,7 +1222,10 @@ namespace UnityEditor.iOS.Xcode.Stickers
             config.AddProperty("IPHONEOS_DEPLOYMENT_TARGET", "10.0"); // stickers introduced in 10.0
             config.AddProperty("PRODUCT_NAME", "$(TARGET_NAME)");
             config.AddProperty("SKIP_INSTALL", "YES");
-            config.AddProperty("CODE_SIGN_IDENTITY[sdk=iphoneos*]", "iPhone Distribution");
+            if (automaticSigning)
+            {
+                config.AddProperty("CODE_SIGN_IDENTITY[sdk=iphoneos*]", Debug.isDebugBuild ? "iPhone Development" : "iPhone Distribution");
+            }
             config.AddProperty("INFOPLIST_FILE", infoPlistPath); // e.g. relative to source root "Stickers/Info.plist"
             config.AddProperty("PRODUCT_BUNDLE_IDENTIFIER", bundleId);
             config.AddProperty("TARGETED_DEVICE_FAMILY", targetDevice); // e.g. 1,2 universal
