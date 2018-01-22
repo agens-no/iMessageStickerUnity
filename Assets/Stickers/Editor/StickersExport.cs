@@ -12,17 +12,18 @@ namespace Agens.Stickers
     {
         private const string MenuItemPath = "Window/Sticker Pack";
 
-        private const string StickerAssetName = "StickerPack";
-        private const string StickerAssetPath = "Assets/Stickers/Resources/"+StickerAssetName+".asset";
+        public const string StickerAssetName = "StickerPack.asset";
+        private const string StickerAssetPath = "Assets/Editor Default Resources/" + StickerAssetName;
         private const string ExportName = "Unity-iPhone-Stickers";
         private static readonly string ExportPath = Application.dataPath + "/../Temp/Stickers/";
 
         [MenuItem(MenuItemPath)]
         public static void Configurate()
         {
-            var sticker = Resources.Load<StickerPack>(StickerAssetName);
+            var sticker = EditorGUIUtility.Load(StickerAssetName) as StickerPack;
             if (sticker == null)
             {
+                Debug.Log("Could not find Sticker Pack at " + StickerAssetName);
                 sticker = ScriptableObject.CreateInstance<StickerPack>();
                 sticker.Title = PlayerSettings.productName + " Stickers";
                 sticker.BundleId = "stickers";
@@ -83,7 +84,7 @@ namespace Agens.Stickers
                 }
             }
 
-            var pack = Resources.Load<StickerPack>(StickerAssetName);
+            var pack = EditorGUIUtility.Load(StickerAssetName) as StickerPack;
             AddSticker(pack);
 
 #if UNITY_5_6_OR_NEWER
