@@ -8,11 +8,10 @@ namespace Agens.Stickers
 {
     public class StickerTest
     {
-
         [Test]
         public void Title()
         {
-            var pack = Resources.Load<StickerPack>("StickerPack");
+            var pack = EditorGUIUtility.Load(StickersExport.StickerAssetName) as StickerPack;
             Assert.IsNotNull(pack, "Sticker Pack object is missing");
 #if UNITY_5_6_OR_NEWER
             Assert.IsNotNull(pack.Title, "Sticker Pack does not have a title");
@@ -24,7 +23,7 @@ namespace Agens.Stickers
         [Test]
         public void Stickers()
         {
-            var pack = Resources.Load<StickerPack>("StickerPack");
+            var pack = EditorGUIUtility.Load(StickersExport.StickerAssetName) as StickerPack;
 
             for (int index = 0; index < pack.Stickers.Count; index++)
             {
