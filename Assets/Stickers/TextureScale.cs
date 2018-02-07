@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Agens.Stickers
@@ -25,10 +26,18 @@ namespace Agens.Stickers
 
         private static RenderTexture CreateScaledTexture(Texture2D src, int width, int height, Color backgroundColor, float fillPercentage, FilterMode fmode = FilterMode.Trilinear, ScaleMode scaleMode = ScaleMode.ScaleToFit)
         {
-            src.filterMode = fmode;
-            src.Apply(true);
-
             var rtt = new RenderTexture(width, height, 32);
+
+            try
+            {
+                src.filterMode = fmode;
+                src.Apply(true);
+            }
+            catch (UnityException e)
+            {
+                Debug.LogWarning(e);
+                return rtt;
+            }
 
             RenderTexture.active = rtt;
 

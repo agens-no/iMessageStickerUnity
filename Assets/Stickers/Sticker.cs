@@ -6,8 +6,11 @@ namespace Agens.Stickers
 {
     public class Sticker : ScriptableObject
     {
+        [Tooltip("Name of the sticker")]
         public string Name;
+        [Tooltip("Frames per second. Apple recommends 15+ FPS")]
         public int Fps = 15;
+        [Tooltip("Number of repetitions (0 being infinite cycles")]
         public int Repetitions = 0;
         public int Index;
         public bool Sequence;
