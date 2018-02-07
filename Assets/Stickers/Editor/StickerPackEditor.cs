@@ -250,7 +250,8 @@ namespace Agens.Stickers
             {
                 EditorPrefs.SetString("Stickers.ImportFolder", folder);
 
-                var files = Directory.GetFiles(folder, "*.png", SearchOption.TopDirectoryOnly);
+                var files = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(StickerEditorUtility.HasValidFileExtension).ToArray();
                 foreach (var file in files)
                 {
                     var sticker = OnAddCallback(false);
@@ -279,7 +280,8 @@ namespace Agens.Stickers
                     sticker.name = dirInfo.Name;
                     sticker.Name = dirInfo.Name;
 
-                    files = Directory.GetFiles(directory, "*.png", SearchOption.TopDirectoryOnly);
+                    files = Directory.GetFiles(directory, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(StickerEditorUtility.HasValidFileExtension).ToArray();
                     for (var index = 0; index < files.Length; index++)
                     {
                         var file = files[index];
@@ -580,12 +582,12 @@ namespace Agens.Stickers
                 var texture = EditorGUI.ObjectField(firstFrameRect, firstFrame.objectReferenceValue as Texture2D, typeof(Texture2D), false);
                 if (EditorGUI.EndChangeCheck())
                 {
-					firstFrame.objectReferenceValue = texture;
-					if (texture != null) {
-						stickerName.stringValue = texture.name;
-						sticker.targetObject.name = texture.name;
-						updateIndexes = true;
-					}
+                    firstFrame.objectReferenceValue = texture;
+                    if (texture != null) {
+                        stickerName.stringValue = texture.name;
+                        sticker.targetObject.name = texture.name;
+                        updateIndexes = true;
+                    }
                 }
             }
             return false;
@@ -596,13 +598,13 @@ namespace Agens.Stickers
             var id = GUIUtility.GetControlID(SizeOnDisk, FocusType.Passive);
             var helpRect2 = EditorGUI.PrefixLabel(fieldRect, id, SizeOnDisk);
             var sizeOnDisk = GetFileSize(stickerAsset.objectReferenceValue as Sticker);
-            if (sizeOnDisk <= 500000)
+            if (sizeOnDisk <= 500000L)
             {
-                EditorGUI.HelpBox(helpRect2, GetFileSizeInKB(sizeOnDisk), MessageType.None);
+                EditorGUI.HelpBox(helpRect2, StickerEditorUtility.GetFileSizeString(sizeOnDisk), MessageType.None);
             }
             else
             {
-                EditorGUI.HelpBox(helpRect2, GetFileSizeInKB(sizeOnDisk) + " is too large", MessageType.Warning);
+                EditorGUI.HelpBox(helpRect2, StickerEditorUtility.GetFileSizeString(sizeOnDisk) + " is too large", MessageType.Warning);
             }
         }
 
@@ -641,17 +643,7 @@ namespace Agens.Stickers
             repaintMethod.Invoke(guiView, null);
         }
 
-        public static string GetFileSizeInKB(long size)
-        {
-            if (size < 1000)
-            {
-                return size + "B";
-            }
-            else
-            {
-                return (size / 1000) + " KB";
-            }
-        }
+        
 
         private long GetFileSize(Sticker sticker)
         {
@@ -675,12 +667,12 @@ namespace Agens.Stickers
                 var projectPath = Application.dataPath;
                 var filePath = projectPath.Replace("Assets", string.Empty) + postPath;
                 var info = new FileInfo(filePath);
-				try{
-                	size += info.Length;
-				} catch(FileNotFoundException e) {
-					Debug.LogWarning ("Filepath: " + filePath + " is not valid. Please check sticker is not null or exists on disk.");
-					Debug.LogWarning ("Catching: " + e);
-				}
+                try{
+                    size += info.Length;
+                } catch(FileNotFoundException e) {
+                    Debug.LogWarning ("Filepath: " + filePath + " is not valid. Please check sticker is not null or exists on disk.");
+                    Debug.LogWarning ("Catching: " + e);
+                }
             }
             return size;
         }
