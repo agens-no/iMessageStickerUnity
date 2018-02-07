@@ -139,7 +139,7 @@ namespace Agens.Stickers
             {
                 if (sticker.Frames.Count == 1)
                 {
-                    ExportSticker(pathToStickers, sticker.Frames[0], pathToProject);
+                    ExportSticker(pathToStickers, sticker, pathToProject);
                 }
                 else
                 {
@@ -148,11 +148,13 @@ namespace Agens.Stickers
             }
         }
 
-        private static void ExportSticker(string pathToStickers, Texture2D sticker, string pathToProject)
+        private static void ExportSticker(string pathToStickers, Sticker sticker, string pathToProject)
         {
-			if (sticker == null) return;
+            if (sticker == null || sticker.Frames[0] == null) return;
 
-            var pathToSticker = pathToStickers + "/" + sticker.name + ".sticker";
+            var stickerTexture = sticker.Frames[0];
+
+            var pathToSticker = pathToStickers + "/" + sticker.Name + ".sticker";
 
             if (Directory.Exists(pathToSticker))
             {
@@ -160,19 +162,24 @@ namespace Agens.Stickers
             }
 
             Directory.CreateDirectory(pathToSticker);
+            var unityAssetPath = pathToProject + "/" + AssetDatabase.GetAssetPath(stickerTexture);
 
-            var json = CreateStickerContent(sticker);
+            var newFileName = sticker.Name;
+            var fileExtension = Path.GetExtension(unityAssetPath);
+
+
+            var json = CreateStickerContent(newFileName + fileExtension);
             Log("writing " + pathToSticker + "/Contents.json");
             json.WriteToFile(pathToSticker + "/Contents.json");
-            var oldPath = pathToProject + "/" + AssetDatabase.GetAssetPath(sticker);
-            var fileName = pathToSticker + "/" + sticker.name + ".png";
+            
+            var xcodeAssetPath = pathToSticker + "/" + newFileName + fileExtension;
 
             var count = 0;
-            while (File.Exists(fileName))
+            while (File.Exists(xcodeAssetPath))
             {
-                fileName = pathToSticker + "/" + sticker.name + count + ".png";
+                xcodeAssetPath = pathToSticker + "/" + newFileName + count.ToString() + fileExtension;
             }
-            File.Copy(oldPath, fileName);
+            File.Copy(unityAssetPath, xcodeAssetPath);
         }
 
         private static void ExportStickerSequence(string pathToStickers, Sticker stickerSequence, string pathToProject)
@@ -275,12 +282,12 @@ namespace Agens.Stickers
             return content;
         }
 
-        public static JsonDocument CreateStickerContent(Texture2D file)
+        public static JsonDocument CreateStickerContent(string filename)
         {
             var content = CreateContent();
 
             var properties = content.root.CreateDict("properties");
-            properties.SetString("filename", file.name + ".png");
+            properties.SetString("filename", filename);
             return content;
         }
         
