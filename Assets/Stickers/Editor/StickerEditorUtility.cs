@@ -32,5 +32,17 @@ namespace Agens.Stickers
                 return (size / 1000L).ToString() + " kB";
             }
         }
+
+        /// <summary>
+        /// Checks if the filetype is an animated file or not.
+        /// Supported file checks: .gif
+        /// </summary>
+        /// <param name="filePath">Path to the file or filename</param>
+        /// <returns>True if the file type supports animations</returns>
+        public static bool IsAnimatedTexture(string filePath)
+        {
+            var s = filePath.ToLower(CultureInfo.InvariantCulture);
+            return s.EndsWith(".gif");
+        }
     }
 }
