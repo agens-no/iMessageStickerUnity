@@ -560,7 +560,7 @@ namespace Agens.Stickers
 
         private static bool DrawTexture(SerializedProperty sequence, Rect firstFrameRect, SerializedProperty frames, SerializedProperty fps, Texture2D firstFrameTexture, SerializedProperty firstFrame, SerializedProperty stickerName, SerializedObject sticker, ref bool updateIndexes)
         {
-            if (sequence.boolValue)
+            if (sequence.boolValue && frames.arraySize > 1)
             {
                 GUI.Box(firstFrameRect, GUIContent.none);
                 var frameIndex = StickerEditor.AnimatedIndex(frames, fps);
