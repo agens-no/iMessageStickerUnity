@@ -278,7 +278,21 @@ namespace Agens.Stickers
             }
             else
             {
-                EditorGUILayout.PropertyField(Frames.GetArrayElementAtIndex(0), new GUIContent("Frame"));
+                EditorGUI.BeginChangeCheck();
+                {
+                    EditorGUILayout.PropertyField(Frames.GetArrayElementAtIndex(0), new GUIContent("Frame"));
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (Sequence.boolValue != true)
+                    {
+                        var propertyPath = AssetDatabase.GetAssetPath(Frames.GetArrayElementAtIndex(0).objectReferenceInstanceIDValue);
+                        if (StickerEditorUtility.IsAnimatedTexture(propertyPath))
+                        {
+                            Sequence.boolValue = true;
+                        }
+                    }
+                }
             }
         }
     }

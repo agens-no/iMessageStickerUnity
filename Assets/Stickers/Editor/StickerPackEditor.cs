@@ -587,6 +587,15 @@ namespace Agens.Stickers
                         stickerName.stringValue = texture.name;
                         sticker.targetObject.name = texture.name;
                         updateIndexes = true;
+
+                        if (sequence.boolValue != true)
+                        {
+                            var propertyPath = AssetDatabase.GetAssetPath(firstFrame.objectReferenceInstanceIDValue);
+                            if (StickerEditorUtility.IsAnimatedTexture(propertyPath))
+                            {
+                                sequence.boolValue = true;
+                            }
+                        }
                     }
                 }
             }
