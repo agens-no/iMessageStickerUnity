@@ -672,6 +672,10 @@ namespace Agens.Stickers
             for (int index = 0; index < sticker.Frames.Count; index++)
             {
                 var stickerTexture = sticker.Frames[index];
+                if (stickerTexture == null)
+                {
+                    continue;
+                }
                 var postPath = AssetDatabase.GetAssetPath(stickerTexture);
                 var projectPath = Application.dataPath;
                 var filePath = projectPath.Replace("Assets", string.Empty) + postPath;
