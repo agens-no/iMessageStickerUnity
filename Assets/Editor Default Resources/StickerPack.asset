@@ -36,11 +36,14 @@ MonoBehaviour:
     iPhoneSettings2: {fileID: 0}
     iPhoneSettings3: {fileID: 0}
     iPadSettings2: {fileID: 0}
-  size: 2
+  size: 1
   Stickers:
-  - {fileID: 114534190145373984}
-  - {fileID: 114602808068927756}
---- !u!114 &114534190145373984
+  - {fileID: 114833703134755256}
+  - {fileID: 114139917284256430}
+  - {fileID: 114004665517756736}
+  - {fileID: 114870807897370894}
+  - {fileID: 114623039144601468}
+--- !u!114 &114004665517756736
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -49,16 +52,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
-  m_Name: logo
+  m_Name: ExamplePngSequence
   m_EditorClassIdentifier: 
-  Name: logo
-  Fps: 15
+  Name: ExamplePngSequence
+  Fps: 4
   Repetitions: 0
-  Index: 0
-  Sequence: 0
+  Index: 2
+  Sequence: 1
   Frames:
-  - {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
---- !u!114 &114602808068927756
+  - {fileID: 2800000, guid: e989a25e67950864abf4c89ac483bb86, type: 3}
+  - {fileID: 2800000, guid: e795fc0856f82344dad0df8a63f0e253, type: 3}
+  - {fileID: 2800000, guid: 890cce5fba13dc64da6d6fbc2c94d7d6, type: 3}
+  - {fileID: 2800000, guid: 2214cbcbe0289274797fa3629c50387d, type: 3}
+--- !u!114 &114139917284256430
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -76,3 +82,57 @@ MonoBehaviour:
   Sequence: 0
   Frames:
   - {fileID: 2800000, guid: f85d13fc56d71d648b76483b230ecfd7, type: 3}
+--- !u!114 &114623039144601468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
+  m_Name: exampleGif
+  m_EditorClassIdentifier: 
+  Name: exampleGif
+  Fps: 4
+  Repetitions: 0
+  Index: 4
+  Sequence: 1
+  Frames:
+  - {fileID: 2800000, guid: bfe221f85df6e8747b10e79ab1603839, type: 3}
+--- !u!114 &114833703134755256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
+  m_Name: logo
+  m_EditorClassIdentifier: 
+  Name: logo
+  Fps: 15
+  Repetitions: 0
+  Index: 0
+  Sequence: 0
+  Frames:
+  - {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
+--- !u!114 &114870807897370894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dccd70bedd14da4dadeecf397382724, type: 3}
+  m_Name: exampleApng
+  m_EditorClassIdentifier: 
+  Name: exampleApng
+  Fps: 4
+  Repetitions: 0
+  Index: 3
+  Sequence: 1
+  Frames:
+  - {fileID: 2800000, guid: cb7014ad541898e4fbc04e783c25092e, type: 3}
