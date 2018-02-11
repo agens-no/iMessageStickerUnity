@@ -47,6 +47,9 @@ namespace Agens.Stickers
 
 
         public StickerPackIcon Icons;
+        [Tooltip("Small: (300px * 300px), 4 sticker a row \n" +
+                "Medium: (408px * 408px), 3 sticker a row \n" +
+                "Large: (618px * 618px), 2 sticker a row \n")]
         [SerializeField]
         private StickerSize size = StickerSize.Medium;
 
