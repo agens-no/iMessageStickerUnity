@@ -856,7 +856,8 @@ namespace Agens.Stickers
         private void LoadIconsFromFolder()
         {
             var folder = EditorUtility.OpenFolderPanel("Select Sticker Icon Folder", string.Empty, string.Empty);
-            var files = Directory.GetFiles(folder, "*.png", SearchOption.TopDirectoryOnly).ToList();
+            var files = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(StickerEditorUtility.HasValidFileExtension).ToList();
             files.Sort();
 
             overrideIcon.boolValue = true;
