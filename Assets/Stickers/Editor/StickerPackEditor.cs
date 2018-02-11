@@ -480,13 +480,13 @@ namespace Agens.Stickers
                 var sequenceRect = new Rect(rect);
                 sequenceRect.y += ButtonHeight + 2;
                 sequenceRect.height = ButtonHeight;
-                sequenceRect.width -= 150;
+                sequenceRect.width = EditorGUIUtility.labelWidth + 20f;
                 EditorGUI.PropertyField(sequenceRect, sequence);
 
                 EditorGUI.BeginDisabledGroup(!sequence.boolValue);
                 var buttonRect = new Rect(rect);
                 buttonRect.y += ButtonHeight;
-                buttonRect.xMin = EditorGUIUtility.labelWidth + 50;
+                buttonRect.xMin =sequenceRect.xMax;
                 buttonRect.height = ButtonHeight;
                 if (GUI.Button(buttonRect, LoadFromFolder))
                 {

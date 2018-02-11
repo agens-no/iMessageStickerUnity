@@ -230,7 +230,7 @@ namespace Agens.Stickers
             var rect = GUILayoutUtility.GetRect(new GUIContent(Sequence.displayName, Sequence.tooltip), GUIStyle.none, GUILayout.Height(20));
 
             var sequenceRect = new Rect(rect);
-            sequenceRect.width -= 150;
+            sequenceRect.width = EditorGUIUtility.labelWidth + 20f;
             EditorGUI.PropertyField(sequenceRect, Sequence);
 #if UNITY_5_4_OR_NEWER
             using (new EditorGUI.DisabledScope(playing))
