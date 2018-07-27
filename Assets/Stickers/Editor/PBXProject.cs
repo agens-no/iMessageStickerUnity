@@ -1224,7 +1224,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             config.AddProperty("SKIP_INSTALL", "YES");
             if (automaticSigning)
             {
-                config.AddProperty("CODE_SIGN_IDENTITY[sdk=iphoneos*]", Debug.isDebugBuild ? "iPhone Development" : "iPhone Distribution");
+                config.AddProperty("CODE_SIGN_IDENTITY[sdk=iphoneos*]", Debug.isDebugBuild ? "iPhone Developer" : "iPhone Distribution");
             }
             config.AddProperty("INFOPLIST_FILE", infoPlistPath); // e.g. relative to source root "Stickers/Info.plist"
             config.AddProperty("PRODUCT_BUNDLE_IDENTIFIER", bundleId);
