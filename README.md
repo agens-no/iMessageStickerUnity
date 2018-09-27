@@ -47,6 +47,14 @@ This will create the StickerPack asset for you if it is not set up yet and then 
 
 ![alt tag](https://raw.githubusercontent.com/agens-no/iMessageStickerUnity/master/meta/AddingStickers.png)
 
+## Supported file types
+[Apple guidelines and restrictions](https://developer.apple.com/ios/human-interface-guidelines/extensions/messaging/)
+* jpg single image
+* png single image *- recommended for static images*
+* png sequences
+* png animations (apng with .png extension) *- recommended for animations*
+* gif animations
+
 ## Signing in Xcode
 If you have trouble with signing issues in Xcode or are using automated builds,
 then its a good idea to specify the name of the provisioning profile directly in the sticker pack.

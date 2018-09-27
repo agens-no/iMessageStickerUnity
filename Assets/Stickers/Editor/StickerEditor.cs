@@ -77,11 +77,12 @@ namespace Agens.Stickers
 
         public static void AddStickerSequence(SerializedProperty sequence, SerializedProperty name, SerializedProperty fps, SerializedProperty frames)
         {
-            var path = EditorUtility.OpenFilePanelWithFilters("Select Sticker Sequence", string.Empty, new string[] {"Image", "png" });
+            var path = EditorUtility.OpenFilePanelWithFilters("Select Sticker Sequence", string.Empty, new string[] {"Image", "png,gif,jpg,jpeg" });
             var folder = Path.GetDirectoryName(path);
             //var folder = EditorUtility.OpenFolderPanel("Select Sticker Sequence", string.Empty, string.Empty);
             Debug.Log("path: " + path + " folder: " + folder);
-            var files = Directory.GetFiles(folder, "*.png", SearchOption.TopDirectoryOnly).ToList();
+            var files = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(StickerEditorUtility.HasValidFileExtension).ToList();
             files.Sort();
 
             sequence.boolValue = true;
@@ -107,7 +108,7 @@ namespace Agens.Stickers
         public override void OnPreviewSettings()
         {
 #if UNITY_5_4_OR_NEWER
-			using (new EditorGUI.DisabledScope(!Sequence.boolValue))
+            using (new EditorGUI.DisabledScope(!Sequence.boolValue))
 #else
             EditorGUI.BeginDisabledGroup(!Sequence.boolValue);
 #endif
@@ -123,17 +124,17 @@ namespace Agens.Stickers
             }
 
             if (currentTextureEditor != null)
-			{
+            {
 #if UNITY_5_4_OR_NEWER
-				using (new EditorGUI.DisabledScope(playing))
+                using (new EditorGUI.DisabledScope(playing))
 #else
-			    EditorGUI.BeginDisabledGroup(playing);
+                EditorGUI.BeginDisabledGroup(playing);
 #endif
                 {
                     currentTextureEditor.OnPreviewSettings();
                 }
 #if !UNITY_5_4_OR_NEWER
-			    EditorGUI.EndDisabledGroup();
+                EditorGUI.EndDisabledGroup();
 #endif
             }
         }
@@ -229,12 +230,12 @@ namespace Agens.Stickers
             var rect = GUILayoutUtility.GetRect(new GUIContent(Sequence.displayName, Sequence.tooltip), GUIStyle.none, GUILayout.Height(20));
 
             var sequenceRect = new Rect(rect);
-            sequenceRect.width -= 150;
+            sequenceRect.width = EditorGUIUtility.labelWidth + 20f;
             EditorGUI.PropertyField(sequenceRect, Sequence);
 #if UNITY_5_4_OR_NEWER
             using (new EditorGUI.DisabledScope(playing))
 #else
-			EditorGUI.BeginDisabledGroup(playing);
+            EditorGUI.BeginDisabledGroup(playing);
 #endif
             {
                 rect.xMin = sequenceRect.xMax;
@@ -247,7 +248,7 @@ namespace Agens.Stickers
                 EditorGUILayout.PropertyField(Repetitions);
             }
 #if !UNITY_5_4_OR_NEWER
-			EditorGUI.EndDisabledGroup();
+            EditorGUI.EndDisabledGroup();
 #endif
 
             if (Frames.arraySize == 0)
@@ -277,7 +278,21 @@ namespace Agens.Stickers
             }
             else
             {
-                EditorGUILayout.PropertyField(Frames.GetArrayElementAtIndex(0), new GUIContent("Frame"));
+                EditorGUI.BeginChangeCheck();
+                {
+                    EditorGUILayout.PropertyField(Frames.GetArrayElementAtIndex(0), new GUIContent("Frame"));
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (Sequence.boolValue != true)
+                    {
+                        var propertyPath = AssetDatabase.GetAssetPath(Frames.GetArrayElementAtIndex(0).objectReferenceInstanceIDValue);
+                        if (StickerEditorUtility.IsAnimatedTexture(propertyPath))
+                        {
+                            Sequence.boolValue = true;
+                        }
+                    }
+                }
             }
         }
     }
