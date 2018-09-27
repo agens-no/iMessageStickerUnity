@@ -1044,7 +1044,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             proj.ReadFromString(File.ReadAllText(projPath));
             var targ = proj.TargetGuidByName(PBXProject.GetUnityTargetName());
 
-            RecursivelyCopy(extensionSourcePath, pathToBuiltProject + extensionGroupName + "/");
+            CopyDirectory(extensionSourcePath, pathToBuiltProject + extensionGroupName, false);
             if (proj.HasFramework("Messages.framework"))
             {
                 Debug.LogWarning("Xcode already contains a messages framework.");
@@ -1321,20 +1321,20 @@ namespace UnityEditor.iOS.Xcode.Stickers
 
         // ------ UTILS
 
-        public static void RecursivelyCopy(string fromFolderPath, string toFolderPath)
+        public static void CopyDirectory(string fromFolder, string toFolder, bool overwriteFiles)
         {
-            //Debug.Log ( "** create folder: "+toFolderPath );
-            CreateFolderPath(toFolderPath);
-            string[] files = Directory.GetFiles(fromFolderPath);
-            string[] folder = Directory.GetDirectories(fromFolderPath);
-            foreach (string f in files)
+            fromFolder = Path.GetFullPath(fromFolder);
+            toFolder = Path.GetFullPath(toFolder);
+
+            foreach (var fromSubFolder in Directory.GetDirectories(fromFolder, "*", SearchOption.AllDirectories))
+                Directory.CreateDirectory(fromSubFolder.Replace(fromFolder, toFolder));
+            foreach (var fromFilePath in Directory.GetFiles(fromFolder, "*", SearchOption.AllDirectories))
             {
-                //Debug.Log ( " - copy file: "+Path.GetFileName( f ) );
-                File.Copy(f, toFolderPath + Path.GetFileName(f), true);
-            }
-            foreach (string d in folder)
-            {
-                RecursivelyCopy(d, toFolderPath + d.Substring(d.LastIndexOf("/")) + "/");
+                var toFilePath = fromFilePath.Replace(fromFolder, toFolder);
+                if (overwriteFiles)
+                    File.Copy(fromFilePath, toFilePath, true);
+                else if (!File.Exists(toFilePath))
+                    File.Copy(fromFilePath, toFilePath);
             }
         }
 
