@@ -1044,7 +1044,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             proj.ReadFromString(File.ReadAllText(projPath));
             var targ = proj.TargetGuidByName(PBXProject.GetUnityTargetName());
 
-            CopyDirectory(extensionSourcePath, pathToBuiltProject + extensionGroupName, false);
+            CopyDirectory(extensionSourcePath, pathToBuiltProject + extensionGroupName + "/", false);
             if (proj.HasFramework("Messages.framework"))
             {
                 Debug.LogWarning("Xcode already contains a messages framework.");
