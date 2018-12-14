@@ -103,7 +103,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             get { return m_Data.configs; }
         }
 
-        PBXProjectSection project
+        PBXProjectSection projectSection
         {
             get { return m_Data.project; }
         }
@@ -216,7 +216,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
 
         internal string ProjectGuid()
         {
-            return project.project.guid;
+            return projectSection.project.guid;
         }
 
         /// Returns a guid identifying native target with name @a name
@@ -358,8 +358,8 @@ namespace UnityEditor.iOS.Xcode.Stickers
                 return;
             if (!buildFile.assetTags.Contains(tag))
                 buildFile.assetTags.Add(tag);
-            if (!project.project.knownAssetTags.Contains(tag))
-                project.project.knownAssetTags.Add(tag);
+            if (!projectSection.project.knownAssetTags.Contains(tag))
+                projectSection.project.knownAssetTags.Add(tag);
         }
 
         public void RemoveAssetTagForFile(string targetGuid, string fileGuid, string tag)
@@ -374,12 +374,12 @@ namespace UnityEditor.iOS.Xcode.Stickers
                 if (buildFile2.assetTags.Contains(tag))
                     return;
             }
-            project.project.knownAssetTags.Remove(tag);
+            projectSection.project.knownAssetTags.Remove(tag);
         }
 
         public void AddAssetTagToDefaultInstall(string targetGuid, string tag)
         {
-            if (!project.project.knownAssetTags.Contains(tag))
+            if (!projectSection.project.knownAssetTags.Contains(tag))
                 return;
             AddBuildProperty(targetGuid, "ON_DEMAND_RESOURCES_INITIAL_INSTALL_TAGS", tag);
         }
@@ -395,7 +395,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                 buildFile.assetTags.Remove(tag);
             foreach (var targetGuid in nativeTargets.GetGuids())
                 RemoveAssetTagFromDefaultInstall(targetGuid, tag);
-            project.project.knownAssetTags.Remove(tag);
+            projectSection.project.knownAssetTags.Remove(tag);
         }
 
         public bool ContainsFileByRealPath(string path)
@@ -642,7 +642,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             FileRefsAdd(path, projectPath, null, fileRef);
             CreateSourceGroup(PBX.Utils.GetDirectoryFromPath(projectPath)).children.AddGUID(fileRef.guid);
 
-            project.project.AddReference(productGroup.guid, fileRef.guid);
+            projectSection.project.AddReference(productGroup.guid, fileRef.guid);
         }
 
         /** This function must be called only after the project the library is in has
@@ -667,7 +667,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                 throw new Exception("No such project");
 
             string productsGroupGuid = null;
-            foreach (var proj in project.project.projectReferences)
+            foreach (var proj in projectSection.project.projectReferences)
             {
                 if (proj.projectRef == projectGuid)
                 {
@@ -801,7 +801,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             var productFileRef = AddFile(fullName, "Products/" + fullName, PBXSourceTree.Build);
             var newTarget = PBXNativeTargetData.Create(name, productFileRef, type, buildConfigList.guid);
             nativeTargets.AddEntry(newTarget);
-            project.project.targets.Add(newTarget.guid);
+            projectSection.project.targets.Add(newTarget.guid);
 
             return newTarget.guid;
         }
@@ -832,7 +832,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             copyFiles.AddEntry(copyFilesBuildPhase);
             nativeTargets[mainTarget].phases.AddGUID(copyFilesBuildPhase.guid);
 
-            var containerProxy = PBXContainerItemProxyData.Create(project.project.guid, "1", newTarget.guid, name);
+            var containerProxy = PBXContainerItemProxyData.Create(projectSection.project.guid, "1", newTarget.guid, name);
             containerItems.AddEntry(containerProxy);
 
             var targetDependency = PBXTargetDependencyData.Create(newTarget.guid, containerProxy.guid);
@@ -888,8 +888,8 @@ namespace UnityEditor.iOS.Xcode.Stickers
 
         string GetConfigListForTarget(string targetGuid)
         {
-            if (targetGuid == project.project.guid)
-                return project.project.buildConfigList;
+            if (targetGuid == projectSection.project.guid)
+                return projectSection.project.buildConfigList;
             else
                 return nativeTargets[targetGuid].buildConfigList;
         }
@@ -1042,14 +1042,14 @@ namespace UnityEditor.iOS.Xcode.Stickers
             string projPath = PBXProject.GetPBXProjectPath(pathToBuiltProject);
             PBXProject proj = new PBXProject();
             proj.ReadFromString(File.ReadAllText(projPath));
-            var targ = proj.TargetGuidByName(PBXProject.GetUnityTargetName());
+            var unityIphone = proj.TargetGuidByName(PBXProject.GetUnityTargetName());
 
             CopyDirectory(extensionSourcePath, pathToBuiltProject + extensionGroupName + "/", false);
             if (proj.HasFramework("Messages.framework"))
             {
                 Debug.LogWarning("Xcode already contains a messages framework.");
             }
-            proj.AddFrameworkToProject(targ, "Messages.framework", true);
+            proj.AddFrameworkToProject(unityIphone, "Messages.framework", true);
 
             var stickerExtensionName = "Unity-iPhone-Stickers";
             string ext = ".appex";
@@ -1060,9 +1060,9 @@ namespace UnityEditor.iOS.Xcode.Stickers
             }
             else
             {
-                var newTarget = proj.CreateExtensionTarget(stickerExtensionName, ext, "com.apple.product-type.app-extension.messages-sticker-pack");
+                var unityiPhoneStickers = proj.CreateExtensionTarget(stickerExtensionName, ext, "com.apple.product-type.app-extension.messages-sticker-pack");
                 proj.SetStickerExtensionReleaseBuildFlags(
-                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "Release")],
+                    proj.buildConfigs[proj.BuildConfigByName(unityiPhoneStickers.guid, "Release")],
                     infoPlistPath,
                     extensionBundleId,
                     teamId,
@@ -1072,7 +1072,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                     provisioningProfileSpecifier
                 );
                 proj.SetStickerExtensionDebugBuildFlags(
-                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "Debug")],
+                    proj.buildConfigs[proj.BuildConfigByName(unityiPhoneStickers.guid, "Debug")],
                     infoPlistPath,
                     extensionBundleId,
                     teamId,
@@ -1083,7 +1083,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                 );
 #if UNITY_5_5_OR_NEWER
                 proj.SetStickerExtensionReleaseBuildFlags(
-                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "ReleaseForProfiling")],
+                    proj.buildConfigs[proj.BuildConfigByName(unityiPhoneStickers.guid, "ReleaseForProfiling")],
                     infoPlistPath,
                     extensionBundleId,
                     teamId,
@@ -1093,7 +1093,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
                     provisioningProfileSpecifier
                 );
                 proj.SetStickerExtensionReleaseBuildFlags(
-                    proj.buildConfigs[proj.BuildConfigByName(newTarget.guid, "ReleaseForRunning")],
+                    proj.buildConfigs[proj.BuildConfigByName(unityiPhoneStickers.guid, "ReleaseForRunning")],
                     infoPlistPath,
                     extensionBundleId,
                     teamId,
@@ -1103,27 +1103,29 @@ namespace UnityEditor.iOS.Xcode.Stickers
                     provisioningProfileSpecifier
                 );
 #endif
+                
+                proj.projectSection.project.teamIDs.Add(unityiPhoneStickers.guid, teamId);
 
                 var resourcesBuildPhase = PBXResourcesBuildPhaseData.Create();
                 proj.resources.AddEntry(resourcesBuildPhase);
-                newTarget.phases.AddGUID(resourcesBuildPhase.guid);
+                unityiPhoneStickers.phases.AddGUID(resourcesBuildPhase.guid);
 
-                proj.AddFileToBuild(newTarget.guid, proj.AddFileCustom(extensionSourcePath + "Stickers.xcassets", extensionGroupName + "/Stickers.xcassets", PBXSourceTree.Group, false));
+                proj.AddFileToBuild(unityiPhoneStickers.guid, proj.AddFileCustom(extensionSourcePath + "Stickers.xcassets", extensionGroupName + "/Stickers.xcassets", PBXSourceTree.Group, false));
                 proj.AddFileCustom(extensionSourcePath + "Info.plist", extensionGroupName + "/Info.plist", PBXSourceTree.Group, false);
 
                 var copyFilesBuildPhase = PBXCopyFilesBuildPhaseData.Create("Embed App Extensions", "13");
                 proj.copyFiles.AddEntry(copyFilesBuildPhase);
-                proj.nativeTargets[targ].phases.AddGUID(copyFilesBuildPhase.guid);
+                proj.nativeTargets[unityIphone].phases.AddGUID(copyFilesBuildPhase.guid);
 
-                var containerProxy = PBXContainerItemProxyData.Create(proj.project.project.guid, "1", newTarget.guid, stickerExtensionName);
+                var containerProxy = PBXContainerItemProxyData.Create(proj.projectSection.project.guid, "1", unityiPhoneStickers.guid, stickerExtensionName);
                 proj.containerItems.AddEntry(containerProxy);
 
-                var targetDependency = PBXTargetDependencyData.Create(newTarget.guid, containerProxy.guid);
+                var targetDependency = PBXTargetDependencyData.Create(unityiPhoneStickers.guid, containerProxy.guid);
                 proj.targetDependencies.AddEntry(targetDependency);
-                proj.nativeTargets[targ].dependencies.AddGUID(targetDependency.guid);
+                proj.nativeTargets[unityIphone].dependencies.AddGUID(targetDependency.guid);
 
                 var buildAppCopy = PBXBuildFileData.CreateFromFile(proj.FindFileGuidByProjectPath("Products/" + stickerExtensionName + ext), false, "");
-                proj.BuildFilesAdd(targ, buildAppCopy);
+                proj.BuildFilesAdd(unityIphone, buildAppCopy);
                 copyFilesBuildPhase.files.AddGUID(buildAppCopy.guid);
 
 
@@ -1173,7 +1175,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
             var productFileRef = AddFileCustom(fullName, "Products/" + fullName, PBXSourceTree.Build, false, false);
             var newTarget = PBXNativeTargetData.Create(name, productFileRef, type, buildConfigList.guid);
             nativeTargets.AddEntry(newTarget);
-            project.project.targets.Add(newTarget.guid);
+            projectSection.project.targets.Add(newTarget.guid);
 
             return newTarget;
         }

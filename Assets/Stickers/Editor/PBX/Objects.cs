@@ -809,6 +809,9 @@ namespace UnityEditor.iOS.Xcode.PBX
         public List<string> targets = new List<string>();
         public List<string> knownAssetTags = new List<string>();
         public string buildConfigList;
+        // the name of the entitlements file required for some capabilities.
+        public string entitlementsFile;
+        public Dictionary<string, string> teamIDs = new Dictionary<string, string>();
 
         public void AddReference(string productGroup, string projectRef)
         {
@@ -840,6 +843,15 @@ namespace UnityEditor.iOS.Xcode.PBX
                 var tags = attrs.CreateArray("knownAssetTags");
                 foreach (var tag in knownAssetTags)
                     tags.AddString(tag);
+            }
+
+            // Set the team id
+            foreach (KeyValuePair<string, string> teamID in teamIDs)
+            {
+                var attrs = m_Properties.Contains("attributes") ? m_Properties["attributes"].AsDict() : m_Properties.CreateDict("attributes");
+                var targAttr = attrs.Contains("TargetAttributes") ? attrs["TargetAttributes"].AsDict() : attrs.CreateDict("TargetAttributes");
+                var target = targAttr.Contains(teamID.Key) ? targAttr[teamID.Key].AsDict() : targAttr.CreateDict(teamID.Key);
+                target.SetString("DevelopmentTeam", teamID.Value);
             }
         }
 
