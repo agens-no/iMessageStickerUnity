@@ -66,7 +66,9 @@ namespace Agens.Stickers
         private static readonly GUIContent PixelSize = new GUIContent("Pixel Size");
         private static readonly GUIContent SizeOnDisk = new GUIContent("Size on disk");
         private static readonly GUIContent AppStoreIcon = new GUIContent("App Store Icon");
-        private static readonly GUIContent AppStoreIconSize = new GUIContent("1024 x 768");
+        private static readonly GUIContent AppStoreIconSize = new GUIContent("1024 x 1024");
+        private static readonly GUIContent MessagesAppStoreIcon = new GUIContent("Messages App Store Icon");
+        private static readonly GUIContent MessagesAppStoreIconSize = new GUIContent("1024 x 768");
         private static readonly GUIContent LoadFromFolder = new GUIContent("Load from Folder");
 
         private readonly Dictionary<Sticker, long> diskSizes = new Dictionary<Sticker, long>();
@@ -100,6 +102,7 @@ namespace Agens.Stickers
             iconProperties = new[]
             {
                 icons.FindPropertyRelative("appStore"),
+                icons.FindPropertyRelative("messagesAppStore"),
                 icons.FindPropertyRelative("messagesiPadPro2"),
                 icons.FindPropertyRelative("messagesiPad2"),
                 icons.FindPropertyRelative("messagesiPhone2"),
@@ -116,6 +119,7 @@ namespace Agens.Stickers
             iconTextureLabels = new[]
             {
                 new GUIContent("AppStore"),
+                new GUIContent("MessagesAppStore"),
                 new GUIContent("Messages iPad Pro @2x"),
                 new GUIContent("Messages iPad @2x"),
                 new GUIContent("Messages iPhone @2x"),
@@ -789,6 +793,15 @@ namespace Agens.Stickers
             iconProperties[0].objectReferenceValue = (Texture2D) EditorGUILayout.ObjectField(iconProperties[0].objectReferenceValue, typeof (Texture2D), false, GUILayout.Height(75) , GUILayout.Width(75));
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField(MessagesAppStoreIcon, boldLabelStyle);
+            EditorGUILayout.LabelField(MessagesAppStoreIconSize);
+            EditorGUILayout.EndVertical();
+
+            EditorGUI.BeginChangeCheck();
+            iconProperties[1].objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(iconProperties[1].objectReferenceValue, typeof(Texture2D), false, GUILayout.Height(75), GUILayout.Width(75));
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
@@ -818,7 +831,7 @@ namespace Agens.Stickers
 
             DrawOverride();
 
-            for (int i = 1; i < iconProperties.Length; i++)
+            for (int i = 2; i < iconProperties.Length; i++)
             {
                 DrawIcons(i);
             }

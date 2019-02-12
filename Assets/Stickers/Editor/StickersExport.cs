@@ -247,6 +247,7 @@ namespace Agens.Stickers
             CreateStickerIconElement(icon.Messages3Icon, images.AddDict());
 
             CreateStickerIconElement(icon.AppStoreIcon, images.AddDict());
+            CreateStickerIconElement(icon.MessagesAppStoreIcon, images.AddDict());
 
             return document;
         }
