@@ -24,6 +24,7 @@ namespace Agens.Stickers
                 return new []
                 {
                     AppStoreIcon,
+                    MessagesAppStoreIcon,
 
                     MessagesIpadPro2Icon,
                     MessagesIpad2Icon,
@@ -49,6 +50,8 @@ namespace Agens.Stickers
                 return new []
                 {
                     AppStore,
+                    MessagesAppStore,
+
                     MessagesIpadPro2,
                     MessagesIpad2,
                     MessagesiPhone2,
@@ -70,6 +73,7 @@ namespace Agens.Stickers
             {
                 return new []
                 {
+                    new Vector2(1024,1024),
                     new Vector2(1024,768),
 
                     new Vector2(148,110),
@@ -91,9 +95,13 @@ namespace Agens.Stickers
 
         #region AppStore
 
-        [Header("1024 x 768 px")]
+        [Header("1024 x 1024 px")]
         [SerializeField]
         private Texture2D appStore;
+
+        [Header("1024 x 768 px")]
+        [SerializeField]
+        private Texture2D messagesAppStore;
 
         /// <summary>
         /// 1024,768
@@ -106,6 +114,19 @@ namespace Agens.Stickers
                 {
                     return appStore;
                 }
+                return GetDefaultTexture(1024, 1024);
+            }
+        }
+
+
+        public Texture2D MessagesAppStore
+        {
+            get
+            {
+                if (Override)
+                {
+                    return messagesAppStore;
+                }
                 return GetDefaultTexture(1024, 768);
             }
         }
@@ -117,11 +138,25 @@ namespace Agens.Stickers
                 var texture = AppStore;
                 if (texture != null)
                 {
+                    return new StickerIcon(texture, 1024, 1024, StickerIcon.Idiom.IosMarketing, StickerIcon.Scale.Original);
+                }
+                return null;
+            }
+        }
+
+        public StickerIcon MessagesAppStoreIcon
+        {
+            get
+            {
+                var texture = MessagesAppStore;
+                if(texture != null)
+                {
                     return new StickerIcon(texture, 1024, 768, StickerIcon.Idiom.IosMarketing, StickerIcon.Scale.Original, "ios");
                 }
                 return null;
             }
         }
+
         #endregion
 
         public IconExportSettings Settings;
