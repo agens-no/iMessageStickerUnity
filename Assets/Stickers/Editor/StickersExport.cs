@@ -131,6 +131,11 @@ namespace Agens.Stickers
             var pathToContent = path + "/Stickers.xcassets/Contents.json";
             var contents = CreateStickerPackContent(pack.Size);
             contents.WriteToFile(pathToContent);
+           
+            var pathToStickersListContent=pathToStickers+"/Contents.json";
+            var stickerListContent=CreateStickerListContent(pack);
+            Log("Writing sticker list content to "+pathToStickersListContent);
+            stickerListContent.WriteToFile(pathToStickersListContent);
 
             var plist = CreatePList(pack.Title, PlayerSettings.bundleVersion, PlayerSettings.iOS.buildNumber);
             plist.WriteToFile(path + "/Info.plist");
@@ -270,6 +275,24 @@ namespace Agens.Stickers
             var properties = content.root.CreateDict("properties");
             properties.SetString("grid-size", Enum.GetName(typeof(StickerSize), size).ToLowerInvariant());
             
+            return content;
+        }
+
+        public static JsonDocument CreateStickerListContent(StickerPack pack) {
+            
+            var content = CreateContent();                      
+            var stickerList = content.root.CreateArray("stickers");
+            foreach (var sticker in pack.Stickers)
+            {
+                stickerList.AddDict().SetString("filename", sticker.name + ".sticker");                
+            }
+             // Add info
+            var info = content.root.CreateDict("info");
+            info.SetInteger("version", 1);
+            info.SetString("author", "xcode");
+             // Add properties
+            var properties = content.root.CreateDict("properties");
+            properties.SetString("grid-size", Enum.GetName(typeof(StickerSize), pack.Size).ToLowerInvariant());
             return content;
         }
 
