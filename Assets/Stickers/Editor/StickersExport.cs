@@ -3,10 +3,11 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using Agens.Stickers;
 using Agens.StickersEditor.UnityEditor.iOS.Xcode;
 using Application = UnityEngine.Application;
 
-namespace Agens.Stickers
+namespace Agens.StickersEditor
 {
     public static class StickersExport
     {

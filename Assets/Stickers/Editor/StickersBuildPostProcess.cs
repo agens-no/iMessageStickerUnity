@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 
-namespace Agens.Stickers
+namespace Agens.StickersEditor
 {
     public class StickersBuildPostprocessor
     {

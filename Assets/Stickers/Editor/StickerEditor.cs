@@ -1,12 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using Agens.Stickers;
 
-namespace Agens.Stickers
+namespace Agens.StickersEditor
 {
     [CustomEditor(typeof(Sticker))]
     public class StickerEditor : Editor

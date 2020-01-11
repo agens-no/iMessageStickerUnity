@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,12 +6,13 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEditorInternal;
 using UnityEngine;
+using Agens.Stickers;
 using Object = UnityEngine.Object;
 #if UNITY_5_5_OR_NEWER
 using UnityEngine.Profiling;
 #endif
 
-namespace Agens.Stickers
+namespace Agens.StickersEditor
 {
     [CustomEditor(typeof(StickerPack))]
     public class StickerPackEditor : Editor
