@@ -3,10 +3,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System;
-using UnityEditor.iOS.Xcode.PBX;
+using Agens.StickersEditor.UnityEditor.iOS.Xcode.PBX;
 using UnityEngine;
 
-namespace UnityEditor.iOS.Xcode.Stickers
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode
 {
     using PBXBuildFileSection           = KnownSectionBase<PBXBuildFileData>;
     using PBXFileReferenceSection       = KnownSectionBase<PBXFileReferenceData>;
@@ -25,7 +25,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
     using XCConfigurationListSection    = KnownSectionBase<XCConfigurationListData>;
     using UnknownSection                = KnownSectionBase<PBXObjectData>;
 
-    /*// Determines the tree the given path is relative to
+    // Determines the tree the given path is relative to
     public enum PBXSourceTree
     {
         Absolute,   // The path is absolute
@@ -35,7 +35,7 @@ namespace UnityEditor.iOS.Xcode.Stickers
         Build,      // The path is relative to the build products folder
         Developer,  // The path is relative to the developer folder
         Sdk         // The path is relative to the sdk folder
-    };*/
+    };
 
     public class PBXProject
     {

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Agens.Stickers
 {
     [CustomEditor(typeof(Sticker))]
-    public class StickerEditor : UnityEditor.Editor
+    public class StickerEditor : Editor
     {
         private SerializedProperty Frames;
         private SerializedProperty Sequence;
@@ -19,12 +19,12 @@ namespace Agens.Stickers
 
         private static GUIContent[] s_PlayIcons = new GUIContent[2];
 
-        private List<UnityEditor.Editor> textureEditors;
+        private List<Editor> textureEditors;
 
         private MethodInfo RepaintMethod;
         private object GUIView;
 
-        private UnityEditor.Editor currentTextureEditor
+        private Editor currentTextureEditor
         {
             get
             {
@@ -173,7 +173,7 @@ namespace Agens.Stickers
             {
                 if (RepaintMethod == null)
                 {
-                    var type = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GUIView");
+                    var type = typeof(Editor).Assembly.GetType("UnityEditor.GUIView");
                     var prop = type.GetProperty("current", BindingFlags.Static | BindingFlags.Public);
                     GUIView = prop.GetValue(null, null);
                     RepaintMethod = GUIView.GetType().GetMethod("Repaint", BindingFlags.Public | BindingFlags.Instance);
@@ -203,7 +203,7 @@ namespace Agens.Stickers
         {
             var sticker = serializedObject;
             var frames = sticker.FindProperty("Frames");
-            textureEditors = new List<UnityEditor.Editor>(frames.arraySize);
+            textureEditors = new List<Editor>(frames.arraySize);
             for (int i = 0; i < frames.arraySize; i++)
             {
                 var firstFrame = frames.GetArrayElementAtIndex(i);

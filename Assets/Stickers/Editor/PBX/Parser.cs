@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System;
 
-namespace UnityEditor.iOS.Xcode.PBX
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode.PBX
 {
     class ValueAST {}
 

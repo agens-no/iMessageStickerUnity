@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 
-namespace UnityEditor.iOS.Xcode.PBX
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode.PBX
 {
     internal class GUIDToCommentMap
     {

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
 
-namespace UnityEditor.iOS.Xcode.PBX
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode.PBX
 {    
     class PropertyCommentChecker
     {

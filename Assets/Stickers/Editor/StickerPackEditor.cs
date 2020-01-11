@@ -15,7 +15,7 @@ using UnityEngine.Profiling;
 namespace Agens.Stickers
 {
     [CustomEditor(typeof(StickerPack))]
-    public class StickerPackEditor : UnityEditor.Editor
+    public class StickerPackEditor : Editor
     {
 
         public static readonly int[] ValidSizes = new int[3] {300, 408, 618};
@@ -648,7 +648,7 @@ namespace Agens.Stickers
         {
             if (repaintMethod == null)
             {
-                var type = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GUIView");
+                var type = typeof(Editor).Assembly.GetType("UnityEditor.GUIView");
                 var prop = type.GetProperty("current", BindingFlags.Static | BindingFlags.Public);
                 guiView = prop.GetValue(null, null);
                 repaintMethod = guiView.GetType().GetMethod("Repaint", BindingFlags.Public | BindingFlags.Instance);

@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.iOS.Xcode.Stickers;
+using Agens.StickersEditor.UnityEditor.iOS.Xcode;
 using Application = UnityEngine.Application;
 
 namespace Agens.Stickers

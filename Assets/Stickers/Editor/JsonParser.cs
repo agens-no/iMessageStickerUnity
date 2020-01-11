@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 
-namespace UnityEditor.iOS.Xcode.Stickers
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode
 {
     public class JsonElement
     {
