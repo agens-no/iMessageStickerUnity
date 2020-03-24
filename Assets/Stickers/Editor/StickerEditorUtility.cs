@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Agens.Stickers
+namespace Agens.StickersEditor
 {
     public static class StickerEditorUtility
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 
-namespace UnityEditor.iOS.Xcode.PBX
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode.PBX
 {
     class PBXElement
     {

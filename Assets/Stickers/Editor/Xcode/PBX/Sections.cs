@@ -7,7 +7,7 @@ using System.IO;
 
 // Basr classes for section handling
 
-namespace UnityEditor.iOS.Xcode.PBX
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode.PBX
 {
     // common base
     internal abstract class SectionBase

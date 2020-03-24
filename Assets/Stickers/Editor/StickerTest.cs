@@ -1,10 +1,8 @@
-﻿using System.IO;
-using Agens;
-using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 using NUnit.Framework;
+using Agens.Stickers;
 
-namespace Agens.Stickers
+namespace Agens.StickersEditor
 {
     public class StickerTest
     {

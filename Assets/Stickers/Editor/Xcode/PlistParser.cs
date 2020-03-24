@@ -6,7 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace UnityEditor.iOS.Xcode.Stickers
+namespace Agens.StickersEditor.UnityEditor.iOS.Xcode
 {
     public class PlistElement
     {
