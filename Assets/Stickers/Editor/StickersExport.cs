@@ -281,12 +281,12 @@ namespace Agens.StickersEditor
 
         public static JsonDocument CreateStickerListContent(StickerPack pack)
         {
-
             var content = CreateContent();
             var stickerList = content.root.CreateArray("stickers");
             foreach (var sticker in pack.Stickers)
             {
-                stickerList.AddDict().SetString("filename", sticker.name + ".sticker");
+                var extension = sticker.Sequence ? ".stickersequence" : ".sticker";
+                stickerList.AddDict().SetString("filename", sticker.name + extension);
             }
             // Add info
             var info = content.root.CreateDict("info");
