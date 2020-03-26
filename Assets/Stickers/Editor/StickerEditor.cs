@@ -50,7 +50,7 @@ namespace Agens.StickersEditor
 
         public static int AnimatedIndex(SerializedProperty frames, SerializedProperty fps)
         {
-            var length = frames.arraySize / (float) fps.intValue;
+            var length = frames.arraySize / (float)fps.intValue;
             var time = (float)Wrap(EditorApplication.timeSinceStartup, 0, length);
             var normalized = Mathf.InverseLerp(0, length, time);
             var frameIndex = Mathf.FloorToInt(normalized * frames.arraySize);
@@ -77,7 +77,7 @@ namespace Agens.StickersEditor
 
         public static void AddStickerSequence(SerializedProperty sequence, SerializedProperty name, SerializedProperty fps, SerializedProperty frames)
         {
-            var path = EditorUtility.OpenFilePanelWithFilters("Select Sticker Sequence", string.Empty, new string[] {"Image", "png,gif,jpg,jpeg" });
+            var path = EditorUtility.OpenFilePanelWithFilters("Select Sticker Sequence", string.Empty, new string[] { "Image", "png,gif,jpg,jpeg" });
             var folder = Path.GetDirectoryName(path);
             //var folder = EditorUtility.OpenFolderPanel("Select Sticker Sequence", string.Empty, string.Empty);
             Debug.Log("path: " + path + " folder: " + folder);

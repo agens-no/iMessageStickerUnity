@@ -14,10 +14,10 @@ namespace Agens.Stickers
                 return result;
             }
 
-            var rtt = CreateScaledTexture(src,width,height,backgroundColor,fillPercentage,mode, anchor);
+            var rtt = CreateScaledTexture(src, width, height, backgroundColor, fillPercentage, mode, anchor);
 
-            var texR = new Rect(0,0,width,height);
-            result.ReadPixels(texR,0,0,true);
+            var texR = new Rect(0, 0, width, height);
+            result.ReadPixels(texR, 0, 0, true);
             result.Apply(false);
             RenderTexture.active = null;
             rtt.Release();
@@ -43,7 +43,7 @@ namespace Agens.Stickers
 
             GL.LoadPixelMatrix(0, width, height, 0);
 
-            GL.Clear(true,true,backgroundColor);
+            GL.Clear(true, true, backgroundColor);
 
             fillPercentage = scaleMode == ScaleMode.ScaleToFit ? Mathf.Clamp01(fillPercentage) : 1;
 
@@ -59,7 +59,7 @@ namespace Agens.Stickers
         private static void DrawTexture(Rect position, Texture image, ScaleMode scaleMode, float imageAspect = 0)
         {
             if (imageAspect == 0.0)
-                imageAspect = image.width / (float) image.height;
+                imageAspect = image.width / (float)image.height;
 
             var screenRect = new Rect();
             var sourceRect = new Rect();
@@ -90,14 +90,14 @@ namespace Agens.Stickers
                         if (posAspect > imageAspect)
                         {
                             float num2 = imageAspect / posAspect;
-                            outScreenRect = new Rect(position.xMin + (float) (position.width * (1.0 - num2) * 0.5), position.yMin, num2 * position.width, position.height);
+                            outScreenRect = new Rect(position.xMin + (float)(position.width * (1.0 - num2) * 0.5), position.yMin, num2 * position.width, position.height);
                             outSourceRect = new Rect(0.0f, 0.0f, 1f, 1f);
                             flag = true;
                         }
                         else
                         {
                             float num2 = posAspect / imageAspect;
-                            outScreenRect = new Rect(position.xMin, position.yMin + (float) (position.height * (1.0 - num2) * 0.5), position.width, num2 * position.height);
+                            outScreenRect = new Rect(position.xMin, position.yMin + (float)(position.height * (1.0 - num2) * 0.5), position.width, num2 * position.height);
                             outSourceRect = new Rect(0.0f, 0.0f, 1f, 1f);
                             flag = true;
                         }
@@ -107,14 +107,14 @@ namespace Agens.Stickers
                 {
                     float height = imageAspect / posAspect;
                     outScreenRect = position;
-                    outSourceRect = new Rect(0.0f, (float) ((1.0 - height) * 0.5), 1f, height);
+                    outSourceRect = new Rect(0.0f, (float)((1.0 - height) * 0.5), 1f, height);
                     flag = true;
                 }
                 else
                 {
                     float width = posAspect / imageAspect;
                     outScreenRect = position;
-                    outSourceRect = new Rect((float) (0.5 - width * 0.5), 0.0f, width, 1f);
+                    outSourceRect = new Rect((float)(0.5 - width * 0.5), 0.0f, width, 1f);
                     flag = true;
                 }
             }

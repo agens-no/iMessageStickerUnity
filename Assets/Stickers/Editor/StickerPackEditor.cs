@@ -18,8 +18,8 @@ namespace Agens.StickersEditor
     public class StickerPackEditor : Editor
     {
 
-        public static readonly int[] ValidSizes = new int[3] {300, 408, 618};
-        public static readonly int[] StickerPerRow = new int[3] {4, 3, 2};
+        public static readonly int[] ValidSizes = new int[3] { 300, 408, 618 };
+        public static readonly int[] StickerPerRow = new int[3] { 4, 3, 2 };
 
         private const float FieldHeight = 18;
         private const float ButtonHeight = 22;
@@ -51,7 +51,7 @@ namespace Agens.StickersEditor
         private SerializedProperty filterMode;
         private SerializedProperty scaleMode;
         private SerializedProperty overrideIcon;
-        
+
         private SerializedProperty size;
 
         private SerializedProperty[] iconProperties;
@@ -72,7 +72,7 @@ namespace Agens.StickersEditor
         private static readonly GUIContent LoadFromFolder = new GUIContent("Load from Folder");
 
         private readonly Dictionary<Sticker, long> diskSizes = new Dictionary<Sticker, long>();
-        private int SelectedSection { get { return EditorPrefs.GetInt("StickerSettings.ShownSection", -1); } set{ EditorPrefs.SetInt("StickerSettings.ShownSection", value); }}
+        private int SelectedSection { get { return EditorPrefs.GetInt("StickerSettings.ShownSection", -1); } set { EditorPrefs.SetInt("StickerSettings.ShownSection", value); } }
         private readonly AnimBool[] sectionAnimators = new AnimBool[2];
         private static bool textureChanged;
 
@@ -490,7 +490,7 @@ namespace Agens.StickersEditor
                 EditorGUI.BeginDisabledGroup(!sequence.boolValue);
                 var buttonRect = new Rect(rect);
                 buttonRect.y += ButtonHeight;
-                buttonRect.xMin =sequenceRect.xMax;
+                buttonRect.xMin = sequenceRect.xMax;
                 buttonRect.height = ButtonHeight;
                 if (GUI.Button(buttonRect, LoadFromFolder))
                 {
@@ -587,7 +587,8 @@ namespace Agens.StickersEditor
                 if (EditorGUI.EndChangeCheck())
                 {
                     firstFrame.objectReferenceValue = texture;
-                    if (texture != null) {
+                    if (texture != null)
+                    {
                         stickerName.stringValue = texture.name;
                         sticker.targetObject.name = texture.name;
                         updateIndexes = true;
@@ -625,10 +626,10 @@ namespace Agens.StickersEditor
         {
             var id = GUIUtility.GetControlID(PixelSize, FocusType.Passive);
             var helpRect = EditorGUI.PrefixLabel(fieldRect, id, PixelSize);
-            
+
             var validSizeIndex = size.enumValueIndex;
             var validSize = ValidSizes[validSizeIndex];
-            
+
             if (IsValidSize(validSize, stickerSize))
             {
                 EditorGUI.HelpBox(helpRect, stickerSize.x + "x" + stickerSize.y, MessageType.None);
@@ -656,7 +657,7 @@ namespace Agens.StickersEditor
             repaintMethod.Invoke(guiView, null);
         }
 
-        
+
 
         private long GetFileSize(Sticker sticker)
         {
@@ -684,11 +685,14 @@ namespace Agens.StickersEditor
                 var projectPath = Application.dataPath;
                 var filePath = projectPath.Replace("Assets", string.Empty) + postPath;
                 var info = new FileInfo(filePath);
-                try{
+                try
+                {
                     size += info.Length;
-                } catch(FileNotFoundException e) {
-                    Debug.LogWarning ("Filepath: " + filePath + " is not valid. Please check sticker is not null or exists on disk.");
-                    Debug.LogWarning ("Catching: " + e);
+                }
+                catch (FileNotFoundException e)
+                {
+                    Debug.LogWarning("Filepath: " + filePath + " is not valid. Please check sticker is not null or exists on disk.");
+                    Debug.LogWarning("Catching: " + e);
                 }
             }
             return size;
@@ -731,7 +735,7 @@ namespace Agens.StickersEditor
             EditorGUILayout.PropertyField(automaticSigning);
             automaticSigningAnimated.target = !automaticSigning.boolValue;
 
-            if(EditorGUILayout.BeginFadeGroup(automaticSigningAnimated.faded))
+            if (EditorGUILayout.BeginFadeGroup(automaticSigningAnimated.faded))
             {
                 EditorGUI.BeginDisabledGroup(automaticSigning.boolValue);
                 EditorGUI.indentLevel++;
@@ -790,7 +794,7 @@ namespace Agens.StickersEditor
             EditorGUILayout.EndVertical();
 
             EditorGUI.BeginChangeCheck();
-            iconProperties[0].objectReferenceValue = (Texture2D) EditorGUILayout.ObjectField(iconProperties[0].objectReferenceValue, typeof (Texture2D), false, GUILayout.Height(75) , GUILayout.Width(75));
+            iconProperties[0].objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(iconProperties[0].objectReferenceValue, typeof(Texture2D), false, GUILayout.Height(75), GUILayout.Width(75));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
@@ -884,7 +888,7 @@ namespace Agens.StickersEditor
 
             for (var i = 0; i < iconProperties.Length; i++)
             {
-                iconProperties[i].objectReferenceValue = texturesFound.Find(t => t.width == (int) iconTextureSizes[i].x && t.height == (int) iconTextureSizes[i].y);
+                iconProperties[i].objectReferenceValue = texturesFound.Find(t => t.width == (int)iconTextureSizes[i].x && t.height == (int)iconTextureSizes[i].y);
             }
         }
 
@@ -912,14 +916,14 @@ namespace Agens.StickersEditor
             var textureSize = Vector2.zero;
             if (overrideIcon.boolValue)
             {
-                icon.objectReferenceValue = (Texture2D) EditorGUI.ObjectField(rect, icon.objectReferenceValue, typeof (Texture2D), false);
+                icon.objectReferenceValue = (Texture2D)EditorGUI.ObjectField(rect, icon.objectReferenceValue, typeof(Texture2D), false);
                 if (icon.objectReferenceValue != null)
                 {
-                    var iconTexture = (Texture2D) icon.objectReferenceValue;
+                    var iconTexture = (Texture2D)icon.objectReferenceValue;
                     textureSize = new Vector2(iconTexture.width, iconTexture.height);
                 }
             }
-            else if(texture != null)
+            else if (texture != null)
             {
                 //var obj = (Texture2D) EditorGUI.ObjectField(rect, texture, typeof (Texture2D), false);
                 EditorGUI.DrawTextureTransparent(rect, texture);

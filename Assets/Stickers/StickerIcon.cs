@@ -48,7 +48,7 @@ namespace Agens.Stickers
 
         public string GetScale()
         {
-            return (int) scale + "x";
+            return (int)scale + "x";
         }
     }
 }

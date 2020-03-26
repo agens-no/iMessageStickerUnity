@@ -11,7 +11,7 @@ namespace Agens.Stickers
         {
             public Color BackgroundColor = Color.white;
 
-            [Range(0f,100f)]
+            [Range(0f, 100f)]
             public int FillPercentage = 100;
             public FilterMode FilterMode = FilterMode.Trilinear;
             public ScaleMode ScaleMode = ScaleMode.ScaleToFit;
@@ -21,7 +21,7 @@ namespace Agens.Stickers
         {
             get
             {
-                return new []
+                return new[]
                 {
                     AppStoreIcon,
                     MessagesAppStoreIcon,
@@ -47,7 +47,7 @@ namespace Agens.Stickers
         {
             get
             {
-                return new []
+                return new[]
                 {
                     AppStore,
                     MessagesAppStore,
@@ -71,7 +71,7 @@ namespace Agens.Stickers
         {
             get
             {
-                return new []
+                return new[]
                 {
                     new Vector2(1024,1024),
                     new Vector2(1024,768),
@@ -149,7 +149,7 @@ namespace Agens.Stickers
             get
             {
                 var texture = MessagesAppStore;
-                if(texture != null)
+                if (texture != null)
                 {
                     return new StickerIcon(texture, 1024, 768, StickerIcon.Idiom.IosMarketing, StickerIcon.Scale.Original, "ios");
                 }
@@ -198,7 +198,7 @@ namespace Agens.Stickers
         #region MessagesIpad2
         [Header("134 x 100 px")]
         [SerializeField]
-        private  Texture2D messagesiPad2;
+        private Texture2D messagesiPad2;
 
         /// <summary>
         /// 134,100
@@ -232,7 +232,7 @@ namespace Agens.Stickers
         #region MessagesiPhone2
         [Header("120 x 90 px")]
         [SerializeField]
-        private  Texture2D messagesiPhone2;
+        private Texture2D messagesiPhone2;
 
         /// <summary>
         /// 120,90
@@ -304,7 +304,7 @@ namespace Agens.Stickers
 
         [Header("54 x 40 px")]
         [SerializeField]
-        private  Texture2D messagesSmall2;
+        private Texture2D messagesSmall2;
 
         /// <summary>
         /// 54,40
@@ -339,7 +339,7 @@ namespace Agens.Stickers
 
         [Header("81 x 60 px")]
         [SerializeField]
-        private  Texture2D messagesSmall3;
+        private Texture2D messagesSmall3;
 
         /// <summary>
         /// 81,60
@@ -374,7 +374,7 @@ namespace Agens.Stickers
 
         [Header("64 x 48 px")]
         [SerializeField]
-        private  Texture2D messages2;
+        private Texture2D messages2;
 
         /// <summary>
         /// 64,48
@@ -410,7 +410,7 @@ namespace Agens.Stickers
 
         [Header("96 x 72 px")]
         [SerializeField]
-        private  Texture2D messages3;
+        private Texture2D messages3;
 
         /// <summary>
         /// 96,72
@@ -445,7 +445,7 @@ namespace Agens.Stickers
         #region IPhoneSettings2
         [Header("58 x 58 px")]
         [SerializeField]
-        private  Texture2D iPhoneSettings2;
+        private Texture2D iPhoneSettings2;
         /// <summary>
         /// 58,58
         /// </summary>
@@ -479,7 +479,7 @@ namespace Agens.Stickers
 
         [Header("87 x 87 px")]
         [SerializeField]
-        private  Texture2D iPhoneSettings3;
+        private Texture2D iPhoneSettings3;
 
         /// <summary>
         /// 87,87
@@ -514,7 +514,7 @@ namespace Agens.Stickers
 
         [Header("58 x 58 px")]
         [SerializeField]
-        private  Texture2D iPadSettings2;
+        private Texture2D iPadSettings2;
 
         /// <summary>
         /// 58,58

@@ -31,7 +31,7 @@ namespace Agens.StickersEditor
                 sticker.Signing = new SigningSettings();
                 sticker.Signing.AutomaticSigning = PlayerSettings.iOS.appleEnableAutomaticSigning;
                 sticker.Signing.ProvisioningProfile = PlayerSettings.iOS.iOSManualProvisioningProfileID;
-                var assetPathAndName = AssetDatabase.GenerateUniqueAssetPath (StickerAssetPath);
+                var assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(StickerAssetPath);
                 Log("Creating StickerPack asset at " + assetPathAndName);
                 AssetDatabase.CreateAsset(sticker, assetPathAndName);
             }
@@ -76,7 +76,7 @@ namespace Agens.StickersEditor
                     LogError("Could not find any files in the directory '" + pathToBuiltProject + "'");
                     return;
                 }
-                
+
                 pbxProjFile = files.FirstOrDefault(file => Path.GetExtension(file) == ".pbxproj" || Path.GetExtension(file) == ".xcodeproj");
                 if (pbxProjFile == null)
                 {
@@ -132,10 +132,10 @@ namespace Agens.StickersEditor
             var pathToContent = path + "/Stickers.xcassets/Contents.json";
             var contents = CreateStickerPackContent(pack.Size);
             contents.WriteToFile(pathToContent);
-           
-            var pathToStickersListContent=pathToStickers+"/Contents.json";
-            var stickerListContent=CreateStickerListContent(pack);
-            Log("Writing sticker list content to "+pathToStickersListContent);
+
+            var pathToStickersListContent = pathToStickers + "/Contents.json";
+            var stickerListContent = CreateStickerListContent(pack);
+            Log("Writing sticker list content to " + pathToStickersListContent);
             stickerListContent.WriteToFile(pathToStickersListContent);
 
             var plist = CreatePList(pack.Title, PlayerSettings.bundleVersion, PlayerSettings.iOS.buildNumber);
@@ -177,7 +177,7 @@ namespace Agens.StickersEditor
             var json = CreateStickerContent(newFileName + fileExtension);
             Log("writing " + pathToSticker + "/Contents.json");
             json.WriteToFile(pathToSticker + "/Contents.json");
-            
+
             var xcodeAssetPath = pathToSticker + "/" + newFileName + fileExtension;
 
             var count = 0;
@@ -269,29 +269,30 @@ namespace Agens.StickersEditor
                 dict.SetString("platform", icon.platform);
             }
         }
-        
+
         public static JsonDocument CreateStickerPackContent(StickerSize size)
         {
             var content = CreateContent();
             var properties = content.root.CreateDict("properties");
             properties.SetString("grid-size", Enum.GetName(typeof(StickerSize), size).ToLowerInvariant());
-            
+
             return content;
         }
 
-        public static JsonDocument CreateStickerListContent(StickerPack pack) {
-            
-            var content = CreateContent();                      
+        public static JsonDocument CreateStickerListContent(StickerPack pack)
+        {
+
+            var content = CreateContent();
             var stickerList = content.root.CreateArray("stickers");
             foreach (var sticker in pack.Stickers)
             {
-                stickerList.AddDict().SetString("filename", sticker.name + ".sticker");                
+                stickerList.AddDict().SetString("filename", sticker.name + ".sticker");
             }
-             // Add info
+            // Add info
             var info = content.root.CreateDict("info");
             info.SetInteger("version", 1);
             info.SetString("author", "xcode");
-             // Add properties
+            // Add properties
             var properties = content.root.CreateDict("properties");
             properties.SetString("grid-size", Enum.GetName(typeof(StickerSize), pack.Size).ToLowerInvariant());
             return content;
@@ -315,7 +316,7 @@ namespace Agens.StickersEditor
             properties.SetString("filename", filename);
             return content;
         }
-        
+
         public static JsonDocument CreateStickerSequenceContent(Sticker stickerSequence)
         {
             var content = CreateContent();
@@ -333,10 +334,11 @@ namespace Agens.StickersEditor
             return content;
         }
 
-        private static string GetTargetDeviceFamily ( iOSTargetDevice targetDevice ) {
-            if ( targetDevice == iOSTargetDevice.iPhoneOnly )
+        private static string GetTargetDeviceFamily(iOSTargetDevice targetDevice)
+        {
+            if (targetDevice == iOSTargetDevice.iPhoneOnly)
                 return "1";
-            if ( targetDevice == iOSTargetDevice.iPadOnly )
+            if (targetDevice == iOSTargetDevice.iPadOnly)
                 return "2";
             return "1,2"; // universal
         }

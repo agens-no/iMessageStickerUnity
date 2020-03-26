@@ -53,7 +53,7 @@ namespace Agens.Stickers
         [SerializeField]
         private StickerSize size = StickerSize.Medium;
 
-        public StickerSize Size { get { return size; } set { size = value; }}
+        public StickerSize Size { get { return size; } set { size = value; } }
         public List<Sticker> Stickers;
     }
 }
