@@ -19,6 +19,7 @@ MonoBehaviour:
     ProvisioningProfileSpecifier: 
   Icons:
     appStore: {fileID: 2800000, guid: ee3168dddf17a584bb4c40664464d609, type: 3}
+    messagesAppStore: {fileID: 0}
     Settings:
       BackgroundColor: {r: 0.7141897, g: 0.6991782, b: 0.89705884, a: 1}
       FillPercentage: 100
@@ -97,7 +98,7 @@ MonoBehaviour:
   Fps: 4
   Repetitions: 0
   Index: 4
-  Sequence: 1
+  Sequence: 0
   Frames:
   - {fileID: 2800000, guid: bfe221f85df6e8747b10e79ab1603839, type: 3}
 --- !u!114 &114833703134755256
