@@ -487,7 +487,6 @@ namespace Agens.StickersEditor
                 sequenceRect.width = EditorGUIUtility.labelWidth + 20f;
                 EditorGUI.PropertyField(sequenceRect, sequence);
 
-                EditorGUI.BeginDisabledGroup(!sequence.boolValue);
                 var buttonRect = new Rect(rect);
                 buttonRect.y += ButtonHeight;
                 buttonRect.xMin = sequenceRect.xMax;
@@ -503,7 +502,6 @@ namespace Agens.StickersEditor
                 EditorGUI.PropertyField(fieldRect, fps);
                 fieldRect.y += FieldPadding;
                 EditorGUI.PropertyField(fieldRect, reps);
-                EditorGUI.EndDisabledGroup();
 
                 if (frames.arraySize == 0)
                 {

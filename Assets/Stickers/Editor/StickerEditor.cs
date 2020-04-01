@@ -107,17 +107,8 @@ namespace Agens.StickersEditor
 
         public override void OnPreviewSettings()
         {
-#if UNITY_5_4_OR_NEWER
-            using (new EditorGUI.DisabledScope(!Sequence.boolValue))
-#else
-            EditorGUI.BeginDisabledGroup(!Sequence.boolValue);
-#endif
-            {
-                playing = CycleButton(!playing ? 0 : 1, s_PlayIcons, "preButton") != 0;
-            }
-#if !UNITY_5_4_OR_NEWER
-            EditorGUI.EndDisabledGroup();
-#endif
+            playing = CycleButton(!playing ? 0 : 1, s_PlayIcons, "preButton") != 0;
+
             if (textureEditors == null)
             {
                 CreateTextureEditor();
@@ -125,17 +116,7 @@ namespace Agens.StickersEditor
 
             if (currentTextureEditor != null)
             {
-#if UNITY_5_4_OR_NEWER
-                using (new EditorGUI.DisabledScope(playing))
-#else
-                EditorGUI.BeginDisabledGroup(playing);
-#endif
-                {
-                    currentTextureEditor.OnPreviewSettings();
-                }
-#if !UNITY_5_4_OR_NEWER
-                EditorGUI.EndDisabledGroup();
-#endif
+                currentTextureEditor.OnPreviewSettings();
             }
         }
 
